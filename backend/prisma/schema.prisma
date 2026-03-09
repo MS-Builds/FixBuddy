@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(uuid())
+  name        String
+  phoneNumber String   @unique
+  email       String?  @unique
+  location    String?
+  profileImage String?
+  createdAt   DateTime @default(now())
+  
+  serviceRequests ServiceRequest[]
+  reviews         Review[]
+}
+
+model Captain {
+  id           String   @id @default(uuid())
+  name         String
+  phoneNumber  String   @unique
+  email        String?  @unique
+  password     String?
+  skills       String[]
+  hourlyRate   Float?
+  description  String?
+  profileImage String?
+  workImages   String[]
+  isVerified   Boolean  @default(false)
+  isActive     Boolean  @default(true)
+  latitude     Float?
+  longitude    Float?
+  totalEarnings Float     @default(0)
+  createdAt    DateTime @default(now())
+
+  serviceRequests ServiceRequest[]
+  reviews         Review[]
+}
+
+model ServiceRequest {
+  id          String   @id @default(uuid())
+  userId      String
+  captainId   String?
+  title       String   @default("Service Request")
+  serviceType String?
+  description String
+  images      String[]
+  amount      Float         @default(0)
+  status      ServiceStatus @default(PENDING)
+  location    String?
+  startedAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  captain     Captain? @relation(fields: [captainId], references: [id])
+  messages    Message[]
+}
+
+enum ServiceStatus {
+  PENDING
+  ACCEPTED
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+model Message {
+  id               String   @id @default(uuid())
+  senderId         String
+  receiverId       String
+  text             String
+  serviceRequestId String
+  createdAt        DateTime @default(now())
+
+  serviceRequest   ServiceRequest  @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id          String   @id @default(uuid())
+  userId      String
+  captainId   String
+  rating      Int
+  comment     String?
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  captain     Captain  @relation(fields: [captainId], references: [id], onDelete: Cascade)
+}
+
+model Admin {
+  id       String @id @default(uuid())
+  email    String @unique
+  password String
+}
