@@ -9,7 +9,7 @@ import { ThemeProvider } from "./components/theme-provider.jsx";
 
 createRoot(document.getElementById("root")).render(
     // <React.StrictMode>
-    <ThemeProvider defaultTheme="light" storageKey="fixxr-user-theme">
+    <ThemeProvider defaultTheme="light" storageKey="FixBuddy-user-theme">
         <AuthProvider>
             <SocketProvider>
                 <App />

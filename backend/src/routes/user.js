@@ -12,13 +12,30 @@ router.get('/captains', userController.getCaptains);
 router.get('/captain/:id', userController.getCaptainById);
 router.get('/service-requests', userController.getUserServiceRequests);
 router.get('/profile', userController.getProfile);
-router.put('/profile', userController.updateProfile);
+
+const handleUserProfileImageUpload = async (req, res, next) => {
+    if (!req.file) return next();
+    try {
+        const url = await uploadToCloudinary(req.file.buffer, 'FixBuddy/users');
+        req.body.profileImage = url;
+        next();
+    } catch (error) {
+        console.error('Cloudinary Upload Error (User Profile):', error);
+        return res.status(500).json({ success: false, message: 'Failed to upload profile image', error: error.message || error });
+    }
+};
+
+router.put('/profile',
+    upload.single('profileImage'),
+    handleUserProfileImageUpload,
+    userController.updateProfile
+);
 
 // Middleware wrapper for Cloudinary upload before controller
 const handleImageUploads = async (req, res, next) => {
     if (!req.files || req.files.length === 0) return next();
     try {
-        const uploadPromises = req.files.map(file => uploadToCloudinary(file.buffer, 'fixxr/requests'));
+        const uploadPromises = req.files.map(file => uploadToCloudinary(file.buffer, 'FixBuddy/requests'));
         const urls = await Promise.all(uploadPromises);
         req.body.images = urls; // Attach URLs to body for controller
         req.files = req.files.map((file, i) => ({ ...file, path: urls[i] })); // Mock format if needed

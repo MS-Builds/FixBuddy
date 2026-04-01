@@ -1,6 +1,6 @@
 # FixBuddy - Professional Service Marketplace
 
-FixBuddy (formerly Fixxr) is a modern platform that connects users with skilled professionals (Captains) for various service needs. Inspired by apps like Uber but for handyman services, it features real-time tracking, chat, and an integrated payment flow.
+FixBuddy (formerly FixBuddy) is a modern platform that connects users with skilled professionals (Captains) for various service needs. Inspired by apps like Uber but for handyman services, it features real-time tracking, chat, and an integrated payment flow.
 
 ## 🚀 Project Overview
 

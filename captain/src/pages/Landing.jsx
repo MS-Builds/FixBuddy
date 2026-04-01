@@ -2,27 +2,21 @@ import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../components/ui/accordion";
-import { Briefcase, CheckCircle2, ShieldCheck, Wrench, LayoutDashboard } from "lucide-react";
+import { Briefcase, CheckCircle2, ShieldCheck, LayoutDashboard, ArrowRight, Sparkles, WalletCards, Wrench } from "lucide-react";
 import { AuthContext } from "../context/AuthContext";
+import { BrandWordmark } from "../components/BrandWordmark";
 
 export default function Landing() {
   const { isAuthenticated } = useContext(AuthContext);
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground animate-in fade-in duration-700">
-
-      {/* Navigation */}
-      <header className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border/40 transition-all">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="bg-primary text-primary-foreground p-1.5 rounded-lg">
-              <Wrench className="h-5 w-5" />
-            </div>
-            <span className="text-xl font-bold tracking-tight">Fixxr Captain</span>
-          </div>
+    <div className="flex min-h-screen flex-col bg-background text-foreground animate-in fade-in duration-700">
+      <header className="fixed top-0 z-50 w-full border-b border-border/50 bg-background/85 backdrop-blur-md transition-all">
+        <div className="container mx-auto flex h-16 items-center justify-between px-4">
+          <BrandWordmark subtitle="Captain Network" compact />
           <div className="flex items-center gap-4">
             {isAuthenticated ? (
-              <Button asChild className="rounded-full shadow-lg hover:shadow-xl transition-all font-semibold gap-2">
+              <Button asChild className="gap-2 rounded-full font-semibold shadow-lg transition-all hover:shadow-xl">
                 <Link to="/dashboard">
                   <LayoutDashboard className="h-4 w-4" />
                   Go to Dashboard
@@ -30,8 +24,8 @@ export default function Landing() {
               </Button>
             ) : (
               <>
-                <Link to="/login" className="text-sm font-medium hover:text-primary transition-colors">Log In</Link>
-                <Button asChild className="rounded-full shadow-lg hover:shadow-xl transition-all font-semibold">
+                <Link to="/login" className="text-sm font-medium transition-colors hover:text-primary">Log In</Link>
+                <Button asChild className="h-10 rounded-full px-3 font-semibold shadow-lg transition-all hover:shadow-xl">
                   <Link to="/signup">Become a Captain</Link>
                 </Button>
               </>
@@ -40,81 +34,95 @@ export default function Landing() {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
-        {/* Abstract Background Elements */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-5xl h-[500px] bg-primary/10 blur-[100px] rounded-full pointer-events-none -z-10" />
+      <section className="relative overflow-hidden pt-32 pb-20 md:pt-44 md:pb-28">
+        <div className="absolute inset-0 dot-pattern opacity-70" />
+        <div className="absolute left-1/2 top-0 h-[520px] w-full max-w-5xl -translate-x-1/2 rounded-full bg-primary/10 blur-[100px] pointer-events-none -z-10" />
 
-        <div className="container mx-auto px-4 text-center z-10 relative">
-          <Badge className="mb-6 px-4 py-1.5 rounded-full text-xs font-semibold bg-primary/10 text-primary hover:bg-primary/20 transition-colors cursor-default border-none shadow-sm backdrop-blur-sm">
-            🚀 The Future of Professional Services
+        <div className="container relative z-10 mx-auto px-4 text-center">
+          <Badge className="mb-6 border-none bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary shadow-sm backdrop-blur-sm">
+            Premium demand for trusted local pros
           </Badge>
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter max-w-4xl mx-auto leading-[1.1]">
-            Turn your skills into <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/60">a thriving business.</span>
+          <h1 className="mx-auto max-w-4xl text-5xl font-extrabold leading-[1.1] tracking-tighter md:text-7xl">
+            Turn skilled work into <span className="bg-gradient-to-r from-primary to-[#22c55e] bg-clip-text text-transparent">a sharper, steadier business.</span>
           </h1>
-          <p className="mt-8 text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Join Fixxr's elite network of professional craftsmen, plumbers, electricians, and more. Work on your own terms, earn premium rates, and get jobs delivered straight to your phone.
+          <p className="mx-auto mt-8 max-w-2xl text-xl leading-relaxed text-muted-foreground">
+            Join FixBuddy&apos;s professional network to receive verified requests, manage your schedule, and present your work with a cleaner customer-facing profile.
           </p>
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button asChild size="lg" className="h-14 px-8 text-lg rounded-full shadow-xl shadow-primary/20 hover:scale-105 transition-transform duration-300">
+          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <Button asChild size="lg" className="h-14 rounded-full px-8 text-lg shadow-xl shadow-primary/20 transition-transform duration-300 hover:scale-105">
               <Link to={isAuthenticated ? "/dashboard" : "/signup"}>
-                {isAuthenticated ? "Go to Dashboard" : "Apply Now"}
+                {isAuthenticated ? "Go to Dashboard" : "Become a Captain"}
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="h-14 px-8 text-lg rounded-full hover:bg-secondary transition-colors duration-300 border-2">
+            <Button asChild variant="outline" size="lg" className="h-14 rounded-full border-2 px-8 text-lg transition-colors duration-300 hover:bg-secondary">
               <a href="#how-it-works">Learn How It Works</a>
             </Button>
           </div>
+
+          <div className="mx-auto mt-14 grid max-w-5xl gap-4 md:grid-cols-3">
+            <div className="rounded-[1.75rem] border border-border/70 bg-card/90 p-6 text-left shadow-sm">
+              <Sparkles className="h-5 w-5 text-primary" />
+              <p className="mt-4 text-3xl font-black">Faster</p>
+              <p className="mt-2 text-sm text-muted-foreground">Cleaner intake, quicker review, and less time spent chasing leads.</p>
+            </div>
+            <div className="rounded-[1.75rem] border border-border/70 bg-card/90 p-6 text-left shadow-sm">
+              <ShieldCheck className="h-5 w-5 text-primary" />
+              <p className="mt-4 text-3xl font-black">Verified</p>
+              <p className="mt-2 text-sm text-muted-foreground">Professional profiles and customer requests stay organized in one trusted flow.</p>
+            </div>
+            <div className="rounded-[1.75rem] border border-border/70 bg-card/90 p-6 text-left shadow-sm">
+              <WalletCards className="h-5 w-5 text-primary" />
+              <p className="mt-4 text-3xl font-black">Clearer</p>
+              <p className="mt-2 text-sm text-muted-foreground">Know what needs attention, what is completed, and where your next earning opportunity is.</p>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Features / Why Fixxr */}
-      <section id="how-it-works" className="py-24 bg-secondary/30 relative">
+      <section id="how-it-works" className="relative bg-secondary/30 py-24">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Why partner with Fixxr?</h2>
-            <p className="mt-4 text-muted-foreground max-w-xl mx-auto">We handle the marketing, booking, and payments so you can focus on what you do best.</p>
+          <div className="mb-16 text-center">
+            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Why partner with FixBuddy?</h2>
+            <p className="mx-auto mt-4 max-w-xl text-muted-foreground">We handle the marketing, booking, and payments so you can focus on what you do best.</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <div className="bg-card p-8 rounded-2xl shadow-sm border border-border/50 hover:shadow-md transition-shadow">
-              <div className="h-12 w-12 bg-primary/10 rounded-xl flex items-center justify-center mb-6 text-primary">
+          <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-3">
+            <div className="rounded-[1.75rem] border border-border/50 bg-card p-8 shadow-sm transition-shadow hover:shadow-md">
+              <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
                 <Briefcase className="h-6 w-6" />
               </div>
-              <h3 className="text-xl font-bold mb-3">Be Your Own Boss</h3>
-              <p className="text-muted-foreground leading-relaxed">Toggle your availability instantly. Work when you want, where you want, and only accept the jobs that fit your schedule.</p>
+              <h3 className="mb-3 text-xl font-bold">Be Your Own Boss</h3>
+              <p className="leading-relaxed text-muted-foreground">Toggle your availability instantly. Work when you want, where you want, and only accept the jobs that fit your schedule.</p>
             </div>
-            <div className="bg-card p-8 rounded-2xl shadow-sm border border-border/50 hover:shadow-md transition-shadow">
-              <div className="h-12 w-12 bg-primary/10 rounded-xl flex items-center justify-center mb-6 text-primary">
+            <div className="rounded-[1.75rem] border border-border/50 bg-card p-8 shadow-sm transition-shadow hover:shadow-md">
+              <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
                 <ShieldCheck className="h-6 w-6" />
               </div>
-              <h3 className="text-xl font-bold mb-3">Guaranteed Payments</h3>
-              <p className="text-muted-foreground leading-relaxed">No more chasing invoices. Fixxr ensures secure, immediate transactions directly to your bank account after every completed job.</p>
+              <h3 className="mb-3 text-xl font-bold">Guaranteed Payments</h3>
+              <p className="leading-relaxed text-muted-foreground">No more chasing invoices. FixBuddy ensures secure, immediate transactions directly to your bank account after every completed job.</p>
             </div>
-            <div className="bg-card p-8 rounded-2xl shadow-sm border border-border/50 hover:shadow-md transition-shadow">
-              <div className="h-12 w-12 bg-primary/10 rounded-xl flex items-center justify-center mb-6 text-primary">
+            <div className="rounded-[1.75rem] border border-border/50 bg-card p-8 shadow-sm transition-shadow hover:shadow-md">
+              <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
                 <CheckCircle2 className="h-6 w-6" />
               </div>
-              <h3 className="text-xl font-bold mb-3">Premium Clientele</h3>
-              <p className="text-muted-foreground leading-relaxed">We connect you with high-intent customers who value quality craftsmanship and are willing to pay for professional-grade services.</p>
+              <h3 className="mb-3 text-xl font-bold">Premium Clientele</h3>
+              <p className="leading-relaxed text-muted-foreground">We connect you with high-intent customers who value quality craftsmanship and are willing to pay for professional-grade services.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Fixxr Tools Kits Promo */}
-      <section className="py-24 relative overflow-hidden bg-primary text-primary-foreground">
-        <div className="absolute inset-0 opacity-10 background-grid-pattern mix-blend-overlay"></div>
-        <div className="container mx-auto px-4 relative z-10 flex flex-col md:flex-row items-center gap-12 max-w-6xl">
+      <section className="relative overflow-hidden bg-primary py-24 text-primary-foreground">
+        <div className="container relative z-10 mx-auto flex max-w-6xl flex-col items-center gap-12 px-4 md:flex-row">
           <div className="flex-1 space-y-6">
-            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight">Introducing Fixxr Pro Kits</h2>
-            <p className="text-primary-foreground/80 text-lg leading-relaxed max-w-lg">
-              Equip yourself with the industry standard. Buy or rent premium Fixxr-branded tool kits specifically curated for electricians, plumbers, and carpenters. Stand out with professional gear that ensures quality and safety.
+            <h2 className="text-3xl font-extrabold tracking-tight md:text-5xl">Introducing FixBuddy Pro Kits</h2>
+            <p className="max-w-lg text-lg leading-relaxed text-primary-foreground/80">
+              Equip yourself with the industry standard. Buy or rent premium FixBuddy-branded tool kits specifically curated for electricians, plumbers, and carpenters.
             </p>
             <ul className="space-y-3 pt-2">
               <li className="flex items-center gap-3">
                 <CheckCircle2 className="h-5 w-5 text-green-400" />
-                <span className="font-medium">Exclusive discounts for Active Captains</span>
+                <span className="font-medium">Exclusive discounts for active captains</span>
               </li>
               <li className="flex items-center gap-3">
                 <CheckCircle2 className="h-5 w-5 text-green-400" />
@@ -122,78 +130,80 @@ export default function Landing() {
               </li>
               <li className="flex items-center gap-3">
                 <CheckCircle2 className="h-5 w-5 text-green-400" />
-                <span className="font-medium">Free replacement on wear & tear</span>
+                <span className="font-medium">Free replacement on wear and tear</span>
               </li>
             </ul>
             <div className="pt-4">
-              <Button size="lg" variant="secondary" className="rounded-full shadow-lg hover:scale-105 transition-transform text-primary font-bold">
+              <Button size="lg" variant="secondary" className="rounded-full font-bold text-primary shadow-lg transition-transform hover:scale-105">
                 Explore Tool Kits
               </Button>
             </div>
           </div>
-          <div className="flex-1 w-full flex justify-center">
-            {/* Visual Placeholder for Tools Kit */}
-            <div className="relative w-full max-w-md aspect-square rounded-3xl overflow-hidden bg-primary-foreground/10 border border-primary-foreground/20 shadow-2xl backdrop-blur-sm flex items-center justify-center group">
+          <div className="flex w-full flex-1 justify-center">
+            <div className="group relative aspect-square w-full max-w-md overflow-hidden rounded-3xl border border-primary-foreground/20 bg-primary-foreground/10 shadow-2xl backdrop-blur-sm">
               <div className="absolute inset-0 bg-gradient-to-tr from-primary-foreground/5 to-transparent pointer-events-none" />
-              <Wrench className="h-32 w-32 text-primary-foreground/50 group-hover:scale-110 transition-transform duration-500 ease-in-out" />
+              <div className="flex h-full items-center justify-center">
+                <Wrench className="h-32 w-32 text-primary-foreground/50 transition-transform duration-500 ease-in-out group-hover:scale-110" />
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section className="py-24 container mx-auto px-4 max-w-3xl">
-        <div className="text-center mb-16">
+      <section className="container mx-auto max-w-3xl px-4 py-24">
+        <div className="mb-16 text-center">
           <h2 className="text-3xl font-bold tracking-tight">Frequently Asked Questions</h2>
-          <p className="mt-4 text-muted-foreground">Everything you need to know about becoming a Fixxr Captain.</p>
+          <p className="mt-4 text-muted-foreground">Everything you need to know about becoming a FixBuddy Captain.</p>
         </div>
 
         <Accordion type="single" collapsible className="w-full space-y-4">
-          <AccordionItem value="item-1" className="border rounded-lg px-6 bg-card data-[state=open]:shadow-md transition-all">
-            <AccordionTrigger className="text-left font-semibold text-lg hover:no-underline py-6">What are the requirements to join?</AccordionTrigger>
-            <AccordionContent className="text-muted-foreground leading-relaxed text-base pb-6">
-              You must have documented experience in your specific trade (Plumber, electrical, carpentry, etc.), pass a standard background check, and possess a valid identification. Fixxr Pro Kits are recommended but not strictly required to start.
+          <AccordionItem value="item-1" className="rounded-[1.25rem] border bg-card px-6 transition-all data-[state=open]:shadow-md">
+            <AccordionTrigger className="py-6 text-left text-lg font-semibold hover:no-underline">What are the requirements to join?</AccordionTrigger>
+            <AccordionContent className="pb-6 text-base leading-relaxed text-muted-foreground">
+              You must have documented experience in your specific trade, pass a standard background check, and possess valid identification.
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="item-2" className="border rounded-lg px-6 bg-card data-[state=open]:shadow-md transition-all">
-            <AccordionTrigger className="text-left font-semibold text-lg hover:no-underline py-6">How and when do I get paid?</AccordionTrigger>
-            <AccordionContent className="text-muted-foreground leading-relaxed text-base pb-6">
-              Payments are processed instantly upon job completion via our integrated secure payment gateway. Earnings are deposited directly into your linked bank account within 1-2 business days.
+          <AccordionItem value="item-2" className="rounded-[1.25rem] border bg-card px-6 transition-all data-[state=open]:shadow-md">
+            <AccordionTrigger className="py-6 text-left text-lg font-semibold hover:no-underline">How and when do I get paid?</AccordionTrigger>
+            <AccordionContent className="pb-6 text-base leading-relaxed text-muted-foreground">
+              Payments are processed after job completion, with earnings deposited to your linked account based on the platform payout schedule.
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="item-3" className="border rounded-lg px-6 bg-card data-[state=open]:shadow-md transition-all">
-            <AccordionTrigger className="text-left font-semibold text-lg hover:no-underline py-6">Do I pay a fee to use the platform?</AccordionTrigger>
-            <AccordionContent className="text-muted-foreground leading-relaxed text-base pb-6">
-              Fixxr takes a small percentage commission on completed jobs only. There are no monthly subscription fees, lead fees, or hidden costs. You only pay when you earn.
+          <AccordionItem value="item-3" className="rounded-[1.25rem] border bg-card px-6 transition-all data-[state=open]:shadow-md">
+            <AccordionTrigger className="py-6 text-left text-lg font-semibold hover:no-underline">Do I pay a fee to use the platform?</AccordionTrigger>
+            <AccordionContent className="pb-6 text-base leading-relaxed text-muted-foreground">
+              FixBuddy takes a commission on completed jobs only. There are no monthly subscription fees or hidden lead costs.
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="item-4" className="border rounded-lg px-6 bg-card data-[state=open]:shadow-md transition-all">
-            <AccordionTrigger className="text-left font-semibold text-lg hover:no-underline py-6">Can I choose which jobs to accept?</AccordionTrigger>
-            <AccordionContent className="text-muted-foreground leading-relaxed text-base pb-6">
-              Absolutely! You have complete autonomy. In the Fixxr Captain timeline, you can review a service request—including distance, estimated payout, and user problem description—before choosing to Accept or Reject it.
+          <AccordionItem value="item-4" className="rounded-[1.25rem] border bg-card px-6 transition-all data-[state=open]:shadow-md">
+            <AccordionTrigger className="py-6 text-left text-lg font-semibold hover:no-underline">Can I choose which jobs to accept?</AccordionTrigger>
+            <AccordionContent className="pb-6 text-base leading-relaxed text-muted-foreground">
+              Yes. You stay in control of your availability and can review incoming work before deciding whether to accept it.
             </AccordionContent>
           </AccordionItem>
         </Accordion>
       </section>
 
-      {/* Footer CTA */}
-      <footer className="bg-secondary/50 py-16 border-t border-border/50">
+      <footer className="border-t border-border/50 bg-secondary/50 py-16">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-2xl font-bold mb-6">Ready to upgrade your career?</h2>
-          <Button asChild size="lg" className="rounded-full h-14 px-8 font-semibold shadow-md">
-            <Link to="/signup">Apply Now</Link>
+          <h2 className="mb-6 text-2xl font-bold">Ready to upgrade your career?</h2>
+          <Button asChild size="lg" className="h-14 rounded-full px-8 font-semibold shadow-md">
+            <Link to="/signup" className="inline-flex items-center gap-2">Apply Now <ArrowRight className="h-4 w-4" /></Link>
           </Button>
-          <p className="mt-8 text-sm text-muted-foreground">© 2026 Fixxr Inc. All rights reserved.</p>
+          <p className="mt-8 text-sm text-muted-foreground">� 2026 FixBuddy Inc. All rights reserved.</p>
         </div>
       </footer>
     </div>
   );
 }
 
-// Quick fallback Badge component to avoid importing missing shadcn badge locally
 function Badge({ className, children }) {
-  return <span className={`inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${className}`}>{children}</span>;
+  return (
+    <span className={`inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${className}`}>
+      {children}
+    </span>
+  );
 }

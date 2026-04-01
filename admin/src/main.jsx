@@ -7,7 +7,7 @@ import { ThemeProvider } from './components/theme-provider'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <ThemeProvider defaultTheme="light" storageKey="fixxr-admin-theme">
+    <ThemeProvider defaultTheme="light" storageKey="FixBuddy-admin-theme">
       <App />
     </ThemeProvider>
   </StrictMode>,

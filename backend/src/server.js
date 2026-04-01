@@ -33,7 +33,7 @@ app.use('/api/chat', chatRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
-    res.status(200).json({ success: true, message: "Fixxr Backend is healthy" });
+    res.status(200).json({ success: true, message: "FixBuddy Backend is healthy" });
 });
 
 // Error Handler

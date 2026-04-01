@@ -22,4 +22,4 @@ The professional-facing portal for service providers (Captains) to manage jobs, 
 3.  `npm run dev`
 
 ---
-Part of the Fixxr/FixBuddy Ecosystem.
+Part of the FixBuddy/FixBuddy Ecosystem.

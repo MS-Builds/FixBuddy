@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { sendSMS } from '../utils/sms.js';
+import { sendCaptainAssignmentSms } from '../utils/sms.js';
 
 const prisma = new PrismaClient();
 
@@ -148,8 +148,11 @@ export const createServiceRequest = async (req, res, next) => {
             try {
                 const captain = await prisma.captain.findUnique({ where: { id: captainId } });
                 if (captain && captain.phoneNumber) {
-                    const message = `Hello ${captain.name}! A new service request "${title || serviceType}" has been assigned to you. Check your dashboard for details.`;
-                    await sendSMS(captain.phoneNumber, message);
+                    await sendCaptainAssignmentSms({
+                        to: captain.phoneNumber,
+                        captainName: captain.name,
+                        requestTitle: title || serviceType || 'Service Request'
+                    });
                 }
             } catch (smsError) {
                 console.error('[SMS] Captain notification failed:', smsError.message);

@@ -16,6 +16,7 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ModeToggle } from "./mode-toggle";
+import { BrandWordmark } from "./BrandWordmark";
 
 // ─── Status Badge ──────────────────────────────────────────────────
 
@@ -28,7 +29,7 @@ const StatusBadge = ({ status }) => {
         CANCELLED: 'bg-red-100   text-red-800   border-red-200',
     };
     return (
-        <span className={`inline-flex items-center text-[9px] font-black uppercase px-2.5 py-1 border rounded-none tracking-widest ${map[status] || 'bg-zinc-100 text-zinc-600'}`}>
+        <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[9px] font-black uppercase tracking-widest ${map[status] || 'bg-zinc-100 text-zinc-600'}`}>
             {status}
         </span>
     );
@@ -37,10 +38,10 @@ const StatusBadge = ({ status }) => {
 // ─── Stat Card ──────────────────────────────────────────────────────
 
 const StatCard = ({ title, value, sub, icon: Icon, accent, trend }) => (
-    <Card className="border border-zinc-200 shadow-none rounded-none overflow-hidden bg-white group hover:border-zinc-400 transition-colors">
+    <Card className="overflow-hidden rounded-3xl border border-zinc-200 bg-white shadow-none transition-colors group hover:border-zinc-400">
         <CardContent className="p-6">
             <div className="flex items-start justify-between mb-4">
-                <div className={`h-10 w-10 flex items-center justify-center rounded-none ${accent}`}>
+                <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${accent}`}>
                     <Icon size={18} />
                 </div>
                 {trend && (
@@ -66,67 +67,61 @@ const NAV = [
 ];
 
 const Sidebar = ({ active, onChange, counts, onLogout, onRefresh }) => (
-    <aside className="fixed inset-y-0 left-0 z-40 w-60 bg-zinc-950 flex flex-col">
-        {/* Logo */}
-        <div className="h-16 flex items-center gap-3 px-5 border-b border-zinc-800">
-            <div className="h-8 w-8 bg-white text-zinc-950 flex items-center justify-center font-black text-lg leading-none select-none">F</div>
-            <div>
-                <div className="text-white font-black text-sm uppercase tracking-tight leading-none">Fixxr</div>
-                <div className="text-zinc-500 text-[9px] font-bold uppercase tracking-widest mt-0.5">Admin Panel</div>
-            </div>
+    <aside className="fixed inset-y-0 left-0 z-40 w-72 border-r border-border/70 bg-card/92 backdrop-blur-xl flex flex-col">
+        <div className="px-6 py-5 border-b border-border/70">
+            <BrandWordmark subtitle="Admin workspace" compact />
         </div>
 
         {/* Nav items */}
-        <nav className="flex-1 py-4 space-y-0.5 px-3">
+        <nav className="flex-1 py-5 space-y-1 px-4">
             {NAV.map(({ id, label, icon: Icon }) => {
                 const isActive = active === id;
                 return (
                     <button
                         key={id}
                         onClick={() => onChange(id)}
-                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-none text-left transition-all group relative ${isActive
-                                ? 'bg-white text-zinc-950'
-                                : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
+                        className={`relative w-full rounded-2xl px-3 py-2.5 text-left transition-all group flex items-center gap-3 ${isActive
+                                ? 'bg-primary text-primary-foreground shadow-[0_14px_30px_rgba(15,23,42,0.12)]'
+                                : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
                             }`}
                     >
-                        <Icon size={15} className={isActive ? 'text-zinc-950' : ''} />
+                        <Icon size={15} className={isActive ? 'text-primary-foreground' : ''} />
                         <span className="text-[11px] font-black uppercase tracking-widest flex-1">{label}</span>
                         {counts[id] !== undefined && (
-                            <span className={`text-[10px] font-black tabular-nums ${isActive ? 'text-zinc-500' : 'text-zinc-600'}`}>
+                            <span className={`text-[10px] font-black tabular-nums ${isActive ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
                                 {counts[id]}
                             </span>
                         )}
-                        {isActive && <ChevronRight size={12} className="text-zinc-400" />}
+                        {isActive && <ChevronRight size={12} className="text-primary-foreground/70" />}
                     </button>
                 );
             })}
         </nav>
 
         {/* Bottom actions */}
-        <div className="border-t border-zinc-800 p-3 space-y-1">
+        <div className="border-t border-border/70 p-4 space-y-2">
             <button
                 onClick={onRefresh}
-                className="w-full flex items-center gap-3 px-3 py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all rounded-none"
+                className="w-full flex items-center gap-3 rounded-2xl px-4 py-3 text-muted-foreground hover:bg-secondary hover:text-foreground transition-all"
             >
                 <RefreshCw size={14} />
                 <span className="text-[11px] font-black uppercase tracking-widest">Sync Data</span>
             </button>
             <button
                 onClick={onLogout}
-                className="w-full flex items-center gap-3 px-3 py-2.5 text-zinc-400 hover:text-red-400 hover:bg-red-950/30 transition-all rounded-none"
+                className="w-full flex items-center gap-3 rounded-2xl px-4 py-3 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-all"
             >
                 <LogOut size={14} />
                 <span className="text-[11px] font-black uppercase tracking-widest">Sign Out</span>
             </button>
         </div>
 
-        {/* Admin badge */}
-        <div className="px-3 pb-4">
-            <div className="flex items-center gap-3 px-3 py-2.5 bg-zinc-900 border border-zinc-800">
-                <div className="h-8 w-8 bg-zinc-700 flex items-center justify-center font-black text-white text-sm rounded-none">AD</div>
+        <div className="px-4 pb-5">
+            <div className="flex items-center gap-3 rounded-[24px] border border-border/70 bg-secondary/70 px-4 py-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary text-primary-foreground font-black text-sm">AD</div>
                 <div>
-                    <div className="text-white text-[11px] font-black uppercase tracking-tight">Administrator</div>
-                    <div className="text-zinc-500 text-[9px] font-bold uppercase tracking-widest">Full Access</div>
+                    <div className="text-[11px] font-black uppercase tracking-tight text-foreground">Administrator</div>
+                    <div className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Full Access</div>
                 </div>
             </div>
         </div>
@@ -139,14 +134,14 @@ const UserDetail = ({ user, open, onClose, onDelete }) => {
     if (!user) return null;
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent className="max-w-md rounded-none border-2">
+            <DialogContent className="max-w-md rounded-3xl border-2">
                 <DialogHeader>
                     <DialogTitle className="font-black uppercase tracking-tight text-lg">User Details</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 py-2">
                     <div className="flex items-center gap-4">
-                        <Avatar className="h-16 w-16 rounded-none">
-                            <AvatarFallback className="rounded-none bg-zinc-100 text-zinc-900 font-black text-2xl">
+                        <Avatar className="h-16 w-16 rounded-2xl">
+                            <AvatarFallback className="rounded-2xl bg-zinc-100 text-zinc-900 font-black text-2xl">
                                 {user.name?.substring(0, 2).toUpperCase()}
                             </AvatarFallback>
                         </Avatar>
@@ -165,8 +160,8 @@ const UserDetail = ({ user, open, onClose, onDelete }) => {
                     </div>
                 </div>
                 <DialogFooter className="flex gap-2 border-t pt-4">
-                    <Button variant="outline" className="rounded-none border-2 font-bold flex-1" onClick={onClose}>Close</Button>
-                    <Button variant="destructive" className="rounded-none font-bold flex-1" onClick={() => { onDelete(user.id); onClose(); }}>
+                    <Button variant="outline" className="rounded-full border-2 font-bold flex-1" onClick={onClose}>Close</Button>
+                    <Button variant="destructive" className="rounded-full font-bold flex-1" onClick={() => { onDelete(user.id); onClose(); }}>
                         <Trash2 size={14} className="mr-2" /> Delete User
                     </Button>
                 </DialogFooter>
@@ -181,22 +176,22 @@ const CaptainDetail = ({ captain, open, onClose, onVerify }) => {
     if (!captain) return null;
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent className="max-w-lg rounded-none border-2">
+            <DialogContent className="max-w-lg rounded-3xl border-2">
                 <DialogHeader>
                     <DialogTitle className="font-black uppercase tracking-tight text-lg">Captain Profile</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 py-2">
                     <div className="flex items-center gap-4">
-                        <Avatar className="h-20 w-20 rounded-none">
+                        <Avatar className="h-20 w-20 rounded-2xl">
                             <AvatarImage src={captain.profileImage} className="object-cover" />
-                            <AvatarFallback className="rounded-none bg-zinc-900 text-white font-black text-3xl">
+                            <AvatarFallback className="rounded-2xl bg-zinc-900 text-white font-black text-3xl">
                                 {captain.name?.substring(0, 2).toUpperCase()}
                             </AvatarFallback>
                         </Avatar>
                         <div className="flex-1 min-w-0">
                             <div className="font-black text-xl tracking-tight">{captain.name}</div>
                             <div className="text-xs text-muted-foreground font-bold uppercase tracking-widest mb-2">Service Professional</div>
-                            <Badge className={`rounded-none font-black text-[9px] uppercase tracking-widest ${captain.isVerified ? 'bg-green-600' : 'bg-amber-500'}`}>
+                            <Badge className={`rounded-full font-black text-[9px] uppercase tracking-widest ${captain.isVerified ? 'bg-green-600' : 'bg-amber-500'}`}>
                                 {captain.isVerified ? 'VERIFIED' : 'PENDING VERIFICATION'}
                             </Badge>
                         </div>
@@ -238,9 +233,9 @@ const CaptainDetail = ({ captain, open, onClose, onVerify }) => {
                     )}
                 </div>
                 <DialogFooter className="border-t pt-4 flex gap-2">
-                    <Button variant="outline" className="rounded-none border-2 font-bold flex-1" onClick={onClose}>Close</Button>
+                    <Button variant="outline" className="rounded-full border-2 font-bold flex-1" onClick={onClose}>Close</Button>
                     <Button
-                        className={`rounded-none font-bold flex-1 ${captain.isVerified ? 'bg-amber-500 hover:bg-amber-600 text-white' : 'bg-green-600 hover:bg-green-700 text-white'}`}
+                        className={`rounded-full font-bold flex-1 ${captain.isVerified ? 'bg-amber-500 hover:bg-amber-600 text-white' : 'bg-green-600 hover:bg-green-700 text-white'}`}
                         onClick={() => { onVerify(captain.id, captain.isVerified); onClose(); }}
                     >
                         {captain.isVerified
@@ -352,18 +347,18 @@ const AdminDashboard = ({ onLogout }) => {
 
     // ── Loading ──
     if (loading) return (
-        <div className="flex h-screen items-center justify-center bg-zinc-950">
-            <div className="flex flex-col items-center gap-4">
-                <div className="h-8 w-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
-                <p className="text-[10px] uppercase tracking-[0.25em] font-black text-zinc-500">Loading Platform Data</p>
+        <div className="flex h-screen items-center justify-center bg-background">
+            <div className="surface-glass flex flex-col items-center gap-4 rounded-3xl border border-border/70 px-8 py-7 shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
+                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground">Loading Platform Data</p>
             </div>
         </div>
     );
 
     // ── Error ──
     if (error) return (
-        <div className="flex h-screen items-center justify-center bg-zinc-50 p-6">
-            <Card className="max-w-md border-2 border-red-200 rounded-none w-full shadow-none">
+        <div className="flex h-screen items-center justify-center bg-background p-6">
+            <Card className="max-w-md w-full rounded-3xl border border-destructive/20 shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
                 <CardHeader className="pb-2">
                     <div className="flex items-center gap-2">
                         <AlertCircle size={16} className="text-red-500" />
@@ -372,7 +367,7 @@ const AdminDashboard = ({ onLogout }) => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <p className="text-zinc-600 font-medium text-sm">{error}</p>
-                    <Button onClick={fetchData} className="w-full rounded-none font-bold bg-zinc-950 hover:bg-zinc-800">
+                    <Button onClick={fetchData} className="w-full rounded-full font-semibold">
                         Retry Connection
                     </Button>
                 </CardContent>
@@ -381,7 +376,7 @@ const AdminDashboard = ({ onLogout }) => {
     );
 
     return (
-        <div className="flex h-screen bg-zinc-50 overflow-hidden">
+        <div className="flex h-screen overflow-hidden bg-background">
 
             {/* ── Sidebar ── */}
             <Sidebar
@@ -393,19 +388,19 @@ const AdminDashboard = ({ onLogout }) => {
             />
 
             {/* ── Main content ── */}
-            <div className="flex-1 flex flex-col min-w-0 ml-60">
+            <div className="ml-72 flex min-w-0 flex-1 flex-col">
 
                 {/* Top bar */}
-                <header className="h-16 bg-white border-b border-zinc-200 flex items-center justify-between px-8 shrink-0">
-                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                <header className="flex h-20 shrink-0 items-center justify-between border-b border-border/70 bg-background/80 px-8 backdrop-blur-xl">
+                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                         <span>Admin</span>
                         <ChevronRight size={12} />
-                        <span className="text-zinc-900">{NAV.find(n => n.id === activeTab)?.label}</span>
+                        <span className="text-foreground">{NAV.find(n => n.id === activeTab)?.label}</span>
                     </div>
                     <div className="flex items-center gap-3">
                         <ModeToggle />
-                        <div className="h-8 w-px bg-zinc-200" />
-                        <div className="text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                        <div className="h-8 w-px bg-border" />
+                        <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                             {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                         </div>
                     </div>
@@ -429,7 +424,7 @@ const AdminDashboard = ({ onLogout }) => {
 
                                 <div className="grid lg:grid-cols-2 gap-6">
                                     {/* Recent Users */}
-                                    <Card className="border border-zinc-200 shadow-none rounded-none bg-white">
+                                    <Card className="rounded-3xl border border-zinc-200 bg-white shadow-none">
                                         <CardHeader className="pb-0 pt-5 px-5 flex flex-row items-center justify-between">
                                             <CardTitle className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Recent Users</CardTitle>
                                             <button onClick={() => setActiveTab('users')} className="text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-zinc-900 transition-colors">
@@ -444,8 +439,8 @@ const AdminDashboard = ({ onLogout }) => {
                                                         className="flex items-center gap-3 py-3 cursor-pointer hover:bg-zinc-50 -mx-2 px-2 transition-colors"
                                                         onClick={() => setSelectedUser(u)}
                                                     >
-                                                        <Avatar className="h-8 w-8 rounded-none shrink-0">
-                                                            <AvatarFallback className="rounded-none bg-zinc-100 text-zinc-700 font-black text-xs">
+                                                        <Avatar className="h-8 w-8 rounded-xl shrink-0">
+                                                            <AvatarFallback className="rounded-xl bg-zinc-100 text-zinc-700 font-black text-xs">
                                                                 {u.name?.substring(0, 2).toUpperCase()}
                                                             </AvatarFallback>
                                                         </Avatar>
@@ -462,7 +457,7 @@ const AdminDashboard = ({ onLogout }) => {
                                     </Card>
 
                                     {/* Recent Captains */}
-                                    <Card className="border border-zinc-200 shadow-none rounded-none bg-white">
+                                    <Card className="rounded-3xl border border-zinc-200 bg-white shadow-none">
                                         <CardHeader className="pb-0 pt-5 px-5 flex flex-row items-center justify-between">
                                             <CardTitle className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Recent Captains</CardTitle>
                                             <button onClick={() => setActiveTab('captains')} className="text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-zinc-900 transition-colors">
@@ -477,8 +472,8 @@ const AdminDashboard = ({ onLogout }) => {
                                                         className="flex items-center gap-3 py-3 cursor-pointer hover:bg-zinc-50 -mx-2 px-2 transition-colors"
                                                         onClick={() => setSelectedCaptain(c)}
                                                     >
-                                                        <Avatar className="h-8 w-8 rounded-none shrink-0">
-                                                            <AvatarFallback className="rounded-none bg-zinc-900 text-white font-black text-xs">
+                                                        <Avatar className="h-8 w-8 rounded-xl shrink-0">
+                                                            <AvatarFallback className="rounded-xl bg-zinc-900 text-white font-black text-xs">
                                                                 {c.name?.substring(0, 2).toUpperCase()}
                                                             </AvatarFallback>
                                                         </Avatar>
@@ -486,7 +481,7 @@ const AdminDashboard = ({ onLogout }) => {
                                                             <div className="font-bold text-sm truncate">{c.name}</div>
                                                             <div className="text-xs text-zinc-400 truncate">{(c.skills || []).slice(0, 2).join(', ')}</div>
                                                         </div>
-                                                        <Badge className={`rounded-none font-black text-[8px] uppercase tracking-wide shrink-0 ${c.isVerified ? 'bg-green-600' : 'bg-amber-500'}`}>
+                                                        <Badge className={`rounded-full font-black text-[8px] uppercase tracking-wide shrink-0 ${c.isVerified ? 'bg-green-600' : 'bg-amber-500'}`}>
                                                             {c.isVerified ? 'VER' : 'PND'}
                                                         </Badge>
                                                     </div>
@@ -498,7 +493,7 @@ const AdminDashboard = ({ onLogout }) => {
                                 </div>
 
                                 {/* Status breakdown */}
-                                <Card className="border border-zinc-200 shadow-none rounded-none bg-white">
+                                <Card className="rounded-3xl border border-zinc-200 bg-white shadow-none">
                                     <CardHeader className="pb-0 pt-5 px-5 flex flex-row items-center justify-between">
                                         <CardTitle className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Request Status Breakdown</CardTitle>
                                         <button onClick={() => setActiveTab('requests')} className="text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-zinc-900 transition-colors">
@@ -534,7 +529,7 @@ const AdminDashboard = ({ onLogout }) => {
                                             placeholder="Search users..."
                                             value={userSearch}
                                             onChange={e => setUserSearch(e.target.value)}
-                                            className="pl-9 rounded-none border-2 h-9 font-medium w-64 text-sm"
+                                            className="h-10 w-64 rounded-full border-2 pl-9 text-sm font-medium"
                                         />
                                     </div>
                                     <div className="text-[10px] font-black uppercase tracking-widest text-zinc-400 whitespace-nowrap">
@@ -542,7 +537,7 @@ const AdminDashboard = ({ onLogout }) => {
                                     </div>
                                 </PageHeader>
 
-                                <div className="bg-white border border-zinc-200 rounded-none overflow-hidden">
+                                <div className="overflow-hidden rounded-3xl border border-zinc-200 bg-white">
                                     <Table>
                                         <TableHeader>
                                             <TableRow className="bg-zinc-50 border-b border-zinc-200 hover:bg-zinc-50">
@@ -565,8 +560,8 @@ const AdminDashboard = ({ onLogout }) => {
                                                 <TableRow key={user.id} className="hover:bg-zinc-50 transition-colors border-b border-zinc-100">
                                                     <TableCell className="pl-6 py-4">
                                                         <div className="flex items-center gap-3">
-                                                            <Avatar className="h-9 w-9 rounded-none shrink-0">
-                                                                <AvatarFallback className="rounded-none bg-zinc-100 text-zinc-700 font-black text-sm">
+                                                            <Avatar className="h-9 w-9 rounded-xl shrink-0">
+                                                                <AvatarFallback className="rounded-xl bg-zinc-100 text-zinc-700 font-black text-sm">
                                                                     {user.name?.substring(0, 2).toUpperCase()}
                                                                 </AvatarFallback>
                                                             </Avatar>
@@ -592,10 +587,10 @@ const AdminDashboard = ({ onLogout }) => {
                                                     </TableCell>
                                                     <TableCell className="text-right pr-6">
                                                         <div className="flex items-center justify-end gap-1">
-                                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none hover:bg-zinc-100" onClick={() => setSelectedUser(user)}>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl hover:bg-zinc-100" onClick={() => setSelectedUser(user)}>
                                                                 <Eye size={14} />
                                                             </Button>
-                                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none text-zinc-400 hover:text-red-500 hover:bg-red-50" onClick={() => handleDeleteUser(user.id)}>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl text-zinc-400 hover:bg-red-50 hover:text-red-500" onClick={() => handleDeleteUser(user.id)}>
                                                                 <Trash2 size={14} />
                                                             </Button>
                                                         </div>
@@ -618,7 +613,7 @@ const AdminDashboard = ({ onLogout }) => {
                                             placeholder="Search captains..."
                                             value={captainSearch}
                                             onChange={e => setCaptainSearch(e.target.value)}
-                                            className="pl-9 rounded-none border-2 h-9 font-medium w-64 text-sm"
+                                            className="h-10 w-64 rounded-full border-2 pl-9 text-sm font-medium"
                                         />
                                     </div>
                                     <div className="text-[10px] font-black uppercase tracking-widest text-zinc-400 whitespace-nowrap">
@@ -626,7 +621,7 @@ const AdminDashboard = ({ onLogout }) => {
                                     </div>
                                 </PageHeader>
 
-                                <div className="bg-white border border-zinc-200 rounded-none overflow-hidden">
+                                <div className="overflow-hidden rounded-3xl border border-zinc-200 bg-white">
                                     <Table>
                                         <TableHeader>
                                             <TableRow className="bg-zinc-50 border-b border-zinc-200 hover:bg-zinc-50">
@@ -649,9 +644,9 @@ const AdminDashboard = ({ onLogout }) => {
                                                 <TableRow key={captain.id} className="hover:bg-zinc-50 transition-colors border-b border-zinc-100">
                                                     <TableCell className="pl-6 py-4">
                                                         <div className="flex items-center gap-3">
-                                                            <Avatar className="h-10 w-10 rounded-none shrink-0">
+                                                            <Avatar className="h-10 w-10 rounded-xl shrink-0">
                                                                 <AvatarImage src={captain.profileImage} className="object-cover" />
-                                                                <AvatarFallback className="rounded-none bg-zinc-900 text-white font-black text-sm">
+                                                                <AvatarFallback className="rounded-xl bg-zinc-900 text-white font-black text-sm">
                                                                     {captain.name?.substring(0, 2).toUpperCase()}
                                                                 </AvatarFallback>
                                                             </Avatar>
@@ -684,19 +679,19 @@ const AdminDashboard = ({ onLogout }) => {
                                                         </div>
                                                     </TableCell>
                                                     <TableCell className="text-center">
-                                                        <Badge className={`rounded-none font-black text-[9px] uppercase tracking-widest ${captain.isVerified ? 'bg-green-600 hover:bg-green-700' : 'bg-amber-500 hover:bg-amber-600'}`}>
+                                                        <Badge className={`rounded-full font-black text-[9px] uppercase tracking-widest ${captain.isVerified ? 'bg-green-600 hover:bg-green-700' : 'bg-amber-500 hover:bg-amber-600'}`}>
                                                             {captain.isVerified ? '✓ VERIFIED' : 'PENDING'}
                                                         </Badge>
                                                     </TableCell>
                                                     <TableCell className="text-right pr-6">
                                                         <div className="flex items-center justify-end gap-1.5">
-                                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none hover:bg-zinc-100" onClick={() => setSelectedCaptain(captain)}>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl hover:bg-zinc-100" onClick={() => setSelectedCaptain(captain)}>
                                                                 <Eye size={14} />
                                                             </Button>
                                                             <Button
                                                                 size="sm"
                                                                 variant="outline"
-                                                                className={`font-black uppercase text-[9px] tracking-widest h-8 px-3 rounded-none border-2 ${captain.isVerified
+                                                                className={`h-8 rounded-full border-2 px-3 text-[9px] font-black uppercase tracking-widest ${captain.isVerified
                                                                         ? 'border-amber-300 text-amber-600 hover:bg-amber-50'
                                                                         : 'border-green-400 text-green-700 hover:bg-green-50'
                                                                     }`}
@@ -722,12 +717,12 @@ const AdminDashboard = ({ onLogout }) => {
                             <div className="space-y-5">
                                 <PageHeader title="Service Requests" subtitle={`${requests.length} total requests`}>
                                     <Select value={requestFilter} onValueChange={setRequestFilter}>
-                                        <SelectTrigger className="w-40 rounded-none border-2 h-9 font-bold text-[11px] uppercase tracking-widest">
+                                        <SelectTrigger className="h-10 w-40 rounded-full border-2 text-[11px] font-bold uppercase tracking-widest">
                                             <SelectValue />
                                         </SelectTrigger>
-                                        <SelectContent className="rounded-none border-2">
+                                        <SelectContent className="rounded-2xl border-2">
                                             {['ALL', 'PENDING', 'ACCEPTED', 'ONGOING', 'COMPLETED', 'CANCELLED'].map(s => (
-                                                <SelectItem key={s} value={s} className="font-bold uppercase text-[10px] tracking-widest rounded-none">{s}</SelectItem>
+                                                <SelectItem key={s} value={s} className="rounded-xl text-[10px] font-bold uppercase tracking-widest">{s}</SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
@@ -736,7 +731,7 @@ const AdminDashboard = ({ onLogout }) => {
                                     </div>
                                 </PageHeader>
 
-                                <div className="bg-white border border-zinc-200 rounded-none overflow-hidden">
+                                <div className="overflow-hidden rounded-3xl border border-zinc-200 bg-white">
                                     <Table>
                                         <TableHeader>
                                             <TableRow className="bg-zinc-50 border-b border-zinc-200 hover:bg-zinc-50">

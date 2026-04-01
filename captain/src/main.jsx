@@ -13,7 +13,7 @@ createRoot(document.getElementById("root")).render(
 	<BrowserRouter>
 		<ThemeProvider
 			defaultTheme="light"
-			storageKey="fixxr-captain-theme">
+			storageKey="FixBuddy-captain-theme">
 			<AuthProvider>
 				<SocketProvider>
 					<App />

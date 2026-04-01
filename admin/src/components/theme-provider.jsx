@@ -8,7 +8,7 @@ const ThemeProviderContext = createContext({
 export function ThemeProvider({
   children,
   defaultTheme = "system",
-  storageKey = "fixxr-admin-theme",
+  storageKey = "FixBuddy-admin-theme",
   ...props
 }) {
   const [theme, setTheme] = useState(

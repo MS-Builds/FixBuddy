@@ -4,15 +4,16 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../co
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
-import { Separator } from "../components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
-import { User, Phone, Mail, MapPin, LogOut, Edit, Save } from "lucide-react";
+import { User, Phone, Mail, MapPin, LogOut, Edit, Save, Camera, UploadCloud } from "lucide-react";
 import { toast } from "sonner";
 import api from "../services/api";
 
 export default function Profile() {
     const { user, setUser, logout } = useContext(AuthContext);
     const [editing, setEditing] = useState(false);
+    const [profilePhotoFile, setProfilePhotoFile] = useState(null);
+    const [profilePhotoPreview, setProfilePhotoPreview] = useState(user?.profileImage || "");
     const [form, setForm] = useState({
         name: user?.name || "",
         email: user?.email || "",
@@ -25,10 +26,55 @@ export default function Profile() {
         setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
+    const handleProfilePhotoChange = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setProfilePhotoFile(file);
+        setProfilePhotoPreview(URL.createObjectURL(file));
+        setForm((prev) => ({ ...prev, profileImage: "" }));
+        e.target.value = "";
+    };
+
+    const resetForm = () => {
+        setForm({
+            name: user?.name || "",
+            email: user?.email || "",
+            phoneNumber: user?.phoneNumber || "",
+            location: user?.location || "",
+            profileImage: user?.profileImage || "",
+        });
+        setProfilePhotoFile(null);
+        setProfilePhotoPreview(user?.profileImage || "");
+    };
+
     const handleSave = async () => {
         try {
-            const res = await api.put("/user/profile", form);
+            const payload = new FormData();
+            payload.append("name", form.name);
+            payload.append("email", form.email);
+            payload.append("location", form.location);
+
+            if (profilePhotoFile) {
+                payload.append("profileImage", profilePhotoFile);
+            } else if (form.profileImage) {
+                payload.append("profileImage", form.profileImage);
+            }
+
+            const res = await api.put("/user/profile", payload, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+
             setUser((prev) => ({ ...prev, ...res.data.data }));
+            setForm({
+                name: res.data.data.name || "",
+                email: res.data.data.email || "",
+                phoneNumber: res.data.data.phoneNumber || "",
+                location: res.data.data.location || "",
+                profileImage: res.data.data.profileImage || "",
+            });
+            setProfilePhotoFile(null);
+            setProfilePhotoPreview(res.data.data.profileImage || "");
             setEditing(false);
             toast.success("Profile updated successfully!");
         } catch (error) {
@@ -52,7 +98,7 @@ export default function Profile() {
                 <CardContent className="pt-6">
                     <div className="flex items-center gap-6">
                         <Avatar className="h-20 w-20 text-2xl border-2 border-primary/10 shadow-sm">
-                            <AvatarImage src={user?.profileImage} alt={user?.name} />
+                            <AvatarImage src={profilePhotoPreview || user?.profileImage} alt={user?.name} />
                             <AvatarFallback className="bg-primary/10 text-primary font-bold text-2xl">{initials}</AvatarFallback>
                         </Avatar>
                         <div>
@@ -61,6 +107,41 @@ export default function Profile() {
                             <span className="inline-flex items-center mt-2 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">
                                 Client Account
                             </span>
+                            {editing && (
+                                <div className="mt-4 flex flex-wrap gap-2">
+                                    <label htmlFor="profile-photo-upload" className="cursor-pointer">
+                                        <Button type="button" variant="outline" size="sm" asChild className="rounded-full">
+                                            <span>
+                                                <UploadCloud className="h-4 w-4 mr-1.5" />
+                                                Upload Photo
+                                            </span>
+                                        </Button>
+                                        <input
+                                            id="profile-photo-upload"
+                                            type="file"
+                                            accept="image/*"
+                                            className="hidden"
+                                            onChange={handleProfilePhotoChange}
+                                        />
+                                    </label>
+                                    <label htmlFor="profile-photo-capture" className="cursor-pointer">
+                                        <Button type="button" variant="outline" size="sm" asChild className="rounded-full">
+                                            <span>
+                                                <Camera className="h-4 w-4 mr-1.5" />
+                                                Capture Photo
+                                            </span>
+                                        </Button>
+                                        <input
+                                            id="profile-photo-capture"
+                                            type="file"
+                                            accept="image/*"
+                                            capture="user"
+                                            className="hidden"
+                                            onChange={handleProfilePhotoChange}
+                                        />
+                                    </label>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </CardContent>
@@ -150,7 +231,15 @@ export default function Profile() {
                     </div>
 
                     {editing && (
-                        <Button variant="ghost" size="sm" className="w-full text-muted-foreground" onClick={() => setEditing(false)}>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="w-full text-muted-foreground"
+                            onClick={() => {
+                                resetForm();
+                                setEditing(false);
+                            }}
+                        >
                             Cancel
                         </Button>
                     )}

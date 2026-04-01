@@ -23,4 +23,4 @@ The customer-facing application where users can find, book, and track profession
 -   **Review**: Feedback system after job completion.
 
 ---
-Part of the Fixxr/FixBuddy Ecosystem.
+Part of the FixBuddy/FixBuddy Ecosystem.

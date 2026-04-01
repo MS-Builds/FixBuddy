@@ -13,11 +13,11 @@ const handleCaptainImageUploads = async (req, res, next) => {
     if (!req.files) return next();
     try {
         if (req.files.avatarUrl && req.files.avatarUrl.length > 0) {
-            const url = await uploadToCloudinary(req.files.avatarUrl[0].buffer, 'fixxr/captains');
+            const url = await uploadToCloudinary(req.files.avatarUrl[0].buffer, 'FixBuddy/captains');
             req.body.avatarUrl = url;
         }
         if (req.files.workImages && req.files.workImages.length > 0) {
-            const uploadPromises = req.files.workImages.map(file => uploadToCloudinary(file.buffer, 'fixxr/captains/work'));
+            const uploadPromises = req.files.workImages.map(file => uploadToCloudinary(file.buffer, 'FixBuddy/captains/work'));
             const urls = await Promise.all(uploadPromises);
             req.body.workImages = urls;
         }

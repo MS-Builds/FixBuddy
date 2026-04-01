@@ -7,13 +7,13 @@ The core API service for the FixBuddy platform, handling authentication, data ma
 -   **Framework**: Express.js
 -   **Database**: PostgreSQL with Prisma ORM
 -   **Messaging**: Socket.io for real-time chat and updates
--   **Communication**: Twilio SMS for OTP and job notifications
+-   **Communication**: Twilio Verify + SMS for OTP and job notifications
 -   **Media**: Cloudinary SDK for image processing
 
 ## 📁 Key Directories
 -   `src/controllers/`: Business logic for Auth, Users, Captains, and Jobs.
 -   `src/routes/`: API endpoint definitions.
--   `src/utils/`: Shared utilities (SMS, Cloudinary, JWT, Validators).
+-   `src/utils/`: Shared utilities (SMS, Cloudinary, JWT, OTP, Validators).
 -   `src/sockets/`: WebSocket event handling.
 -   `prisma/`: Database schema and migration tracking.
 
@@ -33,12 +33,14 @@ CLOUDINARY_API_SECRET=
 TWILIO_ACCOUNT_SID=
 TWILIO_AUTH_TOKEN=
 TWILIO_PHONE_NUMBER=
+TWILIO_VERIFY_SERVICE_SID=
 ```
 
 ## 🚀 Running Locally
 1.  `npm install`
 2.  `npx prisma generate`
-3.  `npm run dev`
+3.  Configure the Twilio variables above
+4.  `npm run dev`
 
 ---
 API Documentation is available via the source routes.

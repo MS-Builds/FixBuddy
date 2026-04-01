@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import AdminDashboard from './components/AdminDashboard';
 import Login from './components/Login';
 import './index.css';

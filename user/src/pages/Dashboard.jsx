@@ -9,6 +9,7 @@ import { AuthContext } from "../context/AuthContext";
 import api from "../services/api";
 import { SocketContext } from "../context/SocketContext";
 import { toast } from "sonner";
+import { BrandWordmark } from "../components/BrandWordmark";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -150,8 +151,9 @@ export default function Dashboard() {
                 <div className="absolute inset-0 opacity-10 [background-image:radial-gradient(white_1px,transparent_0)] [background-size:20px_20px]" />
                 <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
+                        <BrandWordmark subtitle="User dashboard" light className="mb-4" />
                         <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">
-                            Welcome back, {user?.name?.split(" ")[0] || "there"}! 👋
+                            Welcome back, {user?.name?.split(" ")[0] || "there"}!
                         </h1>
                         <p className="mt-1 text-primary-foreground/80">What do you need help with today?</p>
                     </div>
@@ -214,33 +216,34 @@ export default function Dashboard() {
                     ) : (
                         <div className="space-y-4">
                             {captains.map((captain) => (
-                                <Link key={captain.id} to={`/professionals/${captain.id}`} className="flex items-center justify-between border rounded-xl p-4 hover:shadow-sm transition-all hover:-translate-y-0.5 bg-card/50">
-                                    <div className="flex items-center gap-4">
-                                        <Avatar className="h-12 w-12 border-2 border-primary/10 shadow-sm">
-                                            <AvatarImage src={captain.profileImage} alt={captain.name} />
-                                            <AvatarFallback className="bg-primary/10 text-primary font-bold text-lg">
-                                                {captain.name?.[0]?.toUpperCase() || "C"}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                        <div>
-                                            <div className="flex items-center gap-2">
-                                                <h4 className="font-semibold">{captain.name}</h4>
-                                                {captain.isVerified && (
-                                                    <Badge variant="outline" className="text-green-600 border-green-300 text-[10px] h-4 px-1.5">✓ Verified</Badge>
-                                                )}
+                                captain.isVerified && (
+                                    <Link key={captain.id} to={`/professionals/${captain.id}`} className="flex items-center justify-between border rounded-xl p-4 hover:shadow-sm transition-all hover:-translate-y-0.5 bg-card/50">
+                                        <div className="flex items-center gap-4">
+                                            <Avatar className="h-12 w-12 border-2 border-primary/10 shadow-sm">
+                                                <AvatarImage src={captain.profileImage} alt={captain.name} />
+                                                <AvatarFallback className="bg-primary/10 text-primary font-bold text-lg">
+                                                    {captain.name?.[0]?.toUpperCase() || "C"}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <div>
+                                                <div className="flex items-center gap-2">
+                                                    <h4 className="font-semibold">{captain.name}</h4>
+                                                    {captain.isVerified && (
+                                                        <Badge variant="outline" className="text-green-600 border-green-300 text-[10px] h-4 px-1.5">✓ Verified</Badge>
+                                                    )}
+                                                </div>
+                                                <p className="text-sm text-muted-foreground line-clamp-1">{captain.skills?.join(" ")}</p>
                                             </div>
-                                            <p className="text-sm text-muted-foreground line-clamp-1">{captain.skills?.join(", ")}</p>
                                         </div>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="font-bold">${captain.hourlyRate}/hr</p>
-                                        <div className="flex items-center justify-end gap-1 text-yellow-500 text-xs mt-1">
-                                            <Star className="h-3 w-3 fill-current" />
-                                            <span className="font-bold">{captain.avgRating?.toFixed(1) || "5.0"}</span>
+                                        <div className="text-right">
+                                            <p className="font-bold">${captain.hourlyRate}/hr</p>
+                                            <div className="flex items-center justify-end gap-1 text-yellow-500 text-xs mt-1">
+                                                <Star className="h-3 w-3 fill-current" />
+                                                <span className="font-bold">{captain.avgRating?.toFixed(1) || "5.0"}</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                </Link>
-                            ))}
+                                    </Link>
+                                )))}
                         </div>
                     )}
                 </CardContent>

@@ -1,6 +1,7 @@
 import React, { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { BrandWordmark } from "./components/BrandWordmark";
 import { MainLayout } from "./layout/MainLayout";
 
 const Landing = lazy(() => import("./pages/Landing"));
@@ -16,8 +17,11 @@ const RequestDetails = lazy(() => import("./pages/RequestDetails"));
 const CaptainProfile = lazy(() => import("./pages/CaptainProfile"));
 
 const LoadingFallback = () => (
-    <div className="min-h-screen flex items-center justify-center bg-black text-white">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+    <div className="min-h-screen flex items-center justify-center bg-background px-6">
+        <div className="surface-glass flex min-w-[280px] items-center justify-between rounded-[28px] border border-border/70 px-6 py-5 shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
+            <BrandWordmark subtitle="Loading" compact />
+            <div className="h-9 w-9 animate-spin rounded-full border-[3px] border-primary/20 border-t-primary" />
+        </div>
     </div>
 );
 
@@ -32,7 +36,7 @@ function App() {
                     <Route path="/signup" element={<SignUp />} />
 
                     {/* Protected routes */}
-                    <Route element={<ProtectedRoute />}>
+                        <Route element={<ProtectedRoute />}>
                         <Route element={<MainLayout />}>
                             <Route path="/dashboard" element={<Dashboard />} />
                             <Route path="/find" element={<FindProfessionals />} />

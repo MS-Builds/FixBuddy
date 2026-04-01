@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { deleteFromCloudinary } from '../utils/cloudinary.js';
-import { sendSMS } from '../utils/sms.js';
+import { sendUserRequestStatusSms } from '../utils/sms.js';
 
 const prisma = new PrismaClient();
 
@@ -135,18 +135,13 @@ export const updateRequestStatus = async (req, res, next) => {
         try {
             const user = await prisma.user.findUnique({ where: { id: request.userId } });
             if (user && user.phoneNumber) {
-                let message = '';
-                if (status === 'ACCEPTED') {
-                    message = `Great news! Captain ${req.user.name} has accepted your request: "${request.title}".`;
-                } else if (status === 'ONGOING') {
-                    message = `Captain ${req.user.name} has started working on your request: "${request.title}".`;
-                } else if (status === 'COMPLETED') {
-                    message = `Success! Your service request "${request.title}" has been marked as COMPLETED by ${req.user.name}. Total: $${updatedRequest.amount}.`;
-                }
-
-                if (message) {
-                    await sendSMS(user.phoneNumber, message);
-                }
+                await sendUserRequestStatusSms({
+                    to: user.phoneNumber,
+                    captainName: req.user.name,
+                    requestTitle: request.title,
+                    status,
+                    amount: updatedRequest.amount
+                });
             }
         } catch (smsError) {
             console.error('[SMS] Notification failed:', smsError.message);

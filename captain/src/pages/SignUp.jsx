@@ -107,7 +107,7 @@ export default function SignUp() {
             <Briefcase className="h-7 w-7" />
           </div>
           <div>
-            <CardTitle className="text-3xl font-extrabold tracking-tight">Join Fixxr Captain</CardTitle>
+            <CardTitle className="text-3xl font-extrabold tracking-tight">Join FixBuddy Captain</CardTitle>
             <CardDescription className="text-base mt-2">Become a professional partner today.</CardDescription>
           </div>
         </CardHeader>
@@ -147,7 +147,7 @@ export default function SignUp() {
                   id="phoneNumber"
                   name="phoneNumber"
                   type="tel"
-                  placeholder="+1 (555) 000-0000"
+                  placeholder="+91(555) 000-0000"
                   value={formData.phoneNumber}
                   onChange={handleInputChange}
                   required

@@ -6,7 +6,7 @@ import { Badge } from "../components/ui/badge";
 import { Skeleton } from "../components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { SearchInput } from "../components/ui/search-input";
-import { Star, MapPin, Clock, Filter } from "lucide-react";
+import { Star, MapPin, Search } from "lucide-react";
 import { Link } from "react-router-dom";
 import api from "../services/api";
 import { toast } from "sonner";
@@ -113,7 +113,7 @@ export default function FindProfessionals() {
                                         </div>
                                         <div className="flex flex-wrap gap-1 mt-2">
                                             {captain.skills?.map((skill) => (
-                                                <span key={skill} className="px-2 py-0.5 bg-secondary text-secondary-foreground rounded-full text-xs font-medium">{skill}</span>
+                                                skill && <span key={skill} className="px-2 py-0.5 bg-secondary text-secondary-foreground rounded-full text-xs font-medium">{skill}</span>
                                             ))}
                                         </div>
                                         {captain.description && (

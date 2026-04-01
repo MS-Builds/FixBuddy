@@ -22,7 +22,7 @@ export default function Profile() {
     availability: true,
   });
 
-  const [skills, setSkills] = useState(["Plumber"]);
+  const [skills, setSkills] = useState([]);
   const [newSkill, setNewSkill] = useState("");
   const [loading, setLoading] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
@@ -84,6 +84,7 @@ export default function Profile() {
       setWorkImages((prev) => [...prev, ...files.map((f) => URL.createObjectURL(f))]);
       setWorkImageFiles((prev) => [...prev, ...files]);
     }
+    e.target.value = "";
   };
 
   const handleRemoveWorkImage = (i) => {
@@ -100,7 +101,7 @@ export default function Profile() {
       fData.append("description", formData.description);
       fData.append("hourlyRate", formData.hourlyRate);
       fData.append("availability", formData.availability);
-      skills.forEach((s) => fData.append("skills[]", s));
+      skills.forEach((s) => { if (s.trim()) fData.append("skills[]", s) });
       if (avatarFile) fData.append("avatarUrl", avatarFile);
       workImageFiles.forEach((f) => fData.append("workImages", f));
 
@@ -181,14 +182,14 @@ export default function Profile() {
                 {/* Status pill */}
                 <div
                   className={`w-full py-2 px-3 rounded-xl flex items-center justify-center gap-2 border font-semibold text-xs transition-colors ${formData.availability
-                      ? "bg-green-500/10 text-green-600 border-green-500/25"
-                      : "bg-destructive/10 text-destructive border-destructive/25"
+                    ? "bg-green-500/10 text-green-600 border-green-500/25"
+                    : "bg-destructive/10 text-destructive border-destructive/25"
                     }`}
                 >
                   <span
                     className={`h-2 w-2 rounded-full ${formData.availability
-                        ? "bg-green-500 shadow-[0_0_6px_rgba(34,197,94,0.6)]"
-                        : "bg-destructive shadow-[0_0_6px_rgba(239,68,68,0.6)]"
+                      ? "bg-green-500 shadow-[0_0_6px_rgba(34,197,94,0.6)]"
+                      : "bg-destructive shadow-[0_0_6px_rgba(239,68,68,0.6)]"
                       }`}
                   />
                   {formData.availability ? "Receiving Jobs" : "Offline"}
@@ -345,6 +346,7 @@ export default function Profile() {
                 ) : (
                   <div className="flex flex-wrap gap-2">
                     {skills.map((skill) => (
+                      skill &&
                       <Badge
                         key={skill}
                         variant="secondary"
@@ -372,44 +374,81 @@ export default function Profile() {
                     </div>
                     <div>
                       <CardTitle className="text-lg font-bold">Portfolio</CardTitle>
-                      <CardDescription className="text-sm">Showcase your previous work</CardDescription>
+                      <CardDescription className="text-sm">Showcase your previous work with uploads or live camera shots</CardDescription>
                     </div>
                   </div>
-                  <label htmlFor="portfolio-upload" className="cursor-pointer">
-                    <Button variant="outline" asChild className="h-9 px-4 rounded-xl font-bold border-2 text-xs">
-                      <span>
-                        <UploadCloud className="h-3.5 w-3.5 mr-1.5" /> Upload
-                      </span>
-                    </Button>
-                    <input
-                      id="portfolio-upload"
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      className="hidden"
-                      onChange={handleWorkImageUpload}
-                    />
-                  </label>
+                  <div className="flex items-center gap-2">
+                    <label htmlFor="portfolio-upload" className="cursor-pointer">
+                      <Button variant="outline" asChild className="h-9 px-4 rounded-xl font-bold border-2 text-xs">
+                        <span>
+                          <UploadCloud className="h-3.5 w-3.5 mr-1.5" /> Upload
+                        </span>
+                      </Button>
+                      <input
+                        id="portfolio-upload"
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        className="hidden"
+                        onChange={handleWorkImageUpload}
+                      />
+                    </label>
+                    <label htmlFor="portfolio-capture" className="cursor-pointer">
+                      <Button variant="outline" asChild className="h-9 px-4 rounded-xl font-bold border-2 text-xs">
+                        <span>
+                          <Camera className="h-3.5 w-3.5 mr-1.5" /> Capture
+                        </span>
+                      </Button>
+                      <input
+                        id="portfolio-capture"
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        multiple
+                        className="hidden"
+                        onChange={handleWorkImageUpload}
+                      />
+                    </label>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="pt-4">
                 {workImages.length === 0 ? (
-                  <label
-                    htmlFor="portfolio-upload-empty"
-                    className="h-44 border-2 border-dashed border-border/70 rounded-xl flex flex-col items-center justify-center text-muted-foreground bg-secondary/10 cursor-pointer hover:bg-secondary/20 transition-colors group"
-                  >
-                    <UploadCloud className="h-10 w-10 mb-2.5 opacity-25 group-hover:opacity-40 transition-opacity" />
-                    <p className="font-semibold text-sm">Drop photos here or click to upload</p>
-                    <p className="text-xs mt-1 opacity-70">Customers prefer captains with visible past work</p>
-                    <input
-                      id="portfolio-upload-empty"
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      className="hidden"
-                      onChange={handleWorkImageUpload}
-                    />
-                  </label>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <label
+                      htmlFor="portfolio-upload-empty"
+                      className="h-44 border-2 border-dashed border-border/70 rounded-xl flex flex-col items-center justify-center text-muted-foreground bg-secondary/10 cursor-pointer hover:bg-secondary/20 transition-colors group"
+                    >
+                      <UploadCloud className="h-10 w-10 mb-2.5 opacity-25 group-hover:opacity-40 transition-opacity" />
+                      <p className="font-semibold text-sm">Upload portfolio photos</p>
+                      <p className="text-xs mt-1 opacity-70">Add finished jobs from your gallery</p>
+                      <input
+                        id="portfolio-upload-empty"
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        className="hidden"
+                        onChange={handleWorkImageUpload}
+                      />
+                    </label>
+                    <label
+                      htmlFor="portfolio-capture-empty"
+                      className="h-44 border-2 border-dashed border-border/70 rounded-xl flex flex-col items-center justify-center text-muted-foreground bg-secondary/10 cursor-pointer hover:bg-secondary/20 transition-colors group"
+                    >
+                      <Camera className="h-10 w-10 mb-2.5 opacity-25 group-hover:opacity-40 transition-opacity" />
+                      <p className="font-semibold text-sm">Capture work now</p>
+                      <p className="text-xs mt-1 opacity-70">Take a photo directly from your camera</p>
+                      <input
+                        id="portfolio-capture-empty"
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        multiple
+                        className="hidden"
+                        onChange={handleWorkImageUpload}
+                      />
+                    </label>
+                  </div>
                 ) : (
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                     {workImages.map((img, i) => (
@@ -440,11 +479,27 @@ export default function Profile() {
                       className="aspect-square rounded-xl border-2 border-dashed border-border/60 flex flex-col items-center justify-center cursor-pointer hover:bg-secondary/20 text-muted-foreground transition-colors group"
                     >
                       <UploadCloud className="h-6 w-6 opacity-40 group-hover:opacity-70 transition-opacity mb-1" />
-                      <span className="text-xs font-medium opacity-60">Add more</span>
+                      <span className="text-xs font-medium opacity-60">Upload more</span>
                       <input
                         id="portfolio-upload-more"
                         type="file"
                         accept="image/*"
+                        multiple
+                        className="hidden"
+                        onChange={handleWorkImageUpload}
+                      />
+                    </label>
+                    <label
+                      htmlFor="portfolio-capture-more"
+                      className="aspect-square rounded-xl border-2 border-dashed border-border/60 flex flex-col items-center justify-center cursor-pointer hover:bg-secondary/20 text-muted-foreground transition-colors group"
+                    >
+                      <Camera className="h-6 w-6 opacity-40 group-hover:opacity-70 transition-opacity mb-1" />
+                      <span className="text-xs font-medium opacity-60">Capture more</span>
+                      <input
+                        id="portfolio-capture-more"
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
                         multiple
                         className="hidden"
                         onChange={handleWorkImageUpload}

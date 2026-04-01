@@ -5,7 +5,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
-import { ArrowLeft, Upload, CheckCircle, XCircle } from "lucide-react";
+import { ArrowLeft, Upload, CheckCircle, XCircle, Camera } from "lucide-react";
 import api from "../services/api";
 import { toast } from "sonner";
 
@@ -41,9 +41,11 @@ export default function NewRequest() {
         const files = Array.from(e.target.files);
         if (files.length + images.length > 5) {
             toast.error("You can only upload up to 5 images.");
+            e.target.value = "";
             return;
         }
         setImages((prev) => [...prev, ...files]);
+        e.target.value = "";
     };
 
     const removeImage = (index) => {
@@ -222,20 +224,34 @@ export default function NewRequest() {
                                     </div>
                                 ))}
                                 {images.length < 5 && (
-                                    <label className="aspect-square rounded-lg border-2 border-dashed border-muted-foreground/20 hover:border-primary/50 hover:bg-primary/5 flex flex-col items-center justify-center cursor-pointer transition-all gap-1">
-                                        <Upload className="h-5 w-5 text-muted-foreground" />
-                                        <span className="text-[10px] font-medium text-muted-foreground uppercase">Upload</span>
-                                        <input
-                                            type="file"
-                                            multiple
-                                            accept="image/*"
-                                            className="hidden"
-                                            onChange={handleImageChange}
-                                        />
-                                    </label>
+                                    <>
+                                        <label className="aspect-square rounded-lg border-2 border-dashed border-muted-foreground/20 hover:border-primary/50 hover:bg-primary/5 flex flex-col items-center justify-center cursor-pointer transition-all gap-1">
+                                            <Upload className="h-5 w-5 text-muted-foreground" />
+                                            <span className="text-[10px] font-medium text-muted-foreground uppercase">Upload</span>
+                                            <input
+                                                type="file"
+                                                multiple
+                                                accept="image/*"
+                                                className="hidden"
+                                                onChange={handleImageChange}
+                                            />
+                                        </label>
+                                        <label className="aspect-square rounded-lg border-2 border-dashed border-muted-foreground/20 bg-secondary/20 hover:border-primary/50 hover:bg-primary/5 flex flex-col items-center justify-center cursor-pointer transition-all gap-1">
+                                            <Camera className="h-5 w-5 text-muted-foreground" />
+                                            <span className="text-[10px] font-medium text-muted-foreground uppercase">Capture</span>
+                                            <input
+                                                type="file"
+                                                multiple
+                                                accept="image/*"
+                                                capture="environment"
+                                                className="hidden"
+                                                onChange={handleImageChange}
+                                            />
+                                        </label>
+                                    </>
                                 )}
                             </div>
-                            <p className="text-[11px] text-muted-foreground">Add photos of your issue to help the pro understand the job better.</p>
+                            <p className="text-[11px] text-muted-foreground">Upload existing photos or capture the job directly from your camera to help the pro understand the work better.</p>
                         </div>
 
                         <div className="flex gap-3 pt-2">

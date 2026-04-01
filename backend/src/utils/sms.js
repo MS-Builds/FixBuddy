@@ -8,7 +8,7 @@ const authToken = process.env.TWILIO_AUTH_TOKEN;
 const fromPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
 const verifyServiceSid = process.env.TWILIO_VERIFY_SERVICE_SID;
 
-const client = twilio(accountSid, authToken);
+const client = accountSid && authToken ? twilio(accountSid, authToken) : null;
 
 /**
  * Formats a phone number to E.164 standard (e.g., +919741624929).
@@ -16,34 +16,51 @@ const client = twilio(accountSid, authToken);
  * @param {string} phone - The raw phone number string
  * @returns {string} - Formatted phone number
  */
-const formatPhoneNumber = (phone) => {
+export const formatPhoneNumber = (phone) => {
     if (!phone) return phone;
 
-    // Remove all non-numeric characters except +
-    let cleaned = phone.replace(/[^\d+]/g, '');
+    const normalizedPhone = String(phone).trim();
+    const cleaned = normalizedPhone.replace(/\D/g, '');
 
-    // If it already starts with +, return as is
-    if (cleaned.startsWith('+')) return cleaned;
+    // If it starts with 00, treat as international (e.g., 0091 -> +91...)
+    if (normalizedPhone.startsWith('00')) {
+        return `+${cleaned}`;
+    }
 
-    // If it's 10 digits, prepend +91 (India)
-    if (cleaned.length === 10) return `+91${cleaned}`;
+    // Already has a + prefix — just clean and return (no spaces)
+    if (normalizedPhone.startsWith('+')) {
+        return `+${cleaned}`;
+    }
 
-    // If it's already 12 digits (starting with 91), prepend +
-    if (cleaned.length === 12 && cleaned.startsWith('91')) return `+${cleaned}`;
+    // 10 digits -> assume India, prepend +91
+    if (cleaned.length === 10) {
+        return `+91${cleaned}`;
+    }
 
-    // Otherwise return as is
-    return `+91${cleaned}`;
+    // 12 digits starting with 91 -> already has country code
+    if (cleaned.length === 12 && cleaned.startsWith('91')) {
+        return `+${cleaned}`;
+    }
+
+    // Fallback
+    return cleaned.length > 5 ? `+${cleaned}` : `+91${cleaned}`;
 };
 
-/**
- * Check if Twilio credentials are properly configured
- * @returns {boolean}
- */
-const hasValidCredentials = () => {
+const hasSmsCredentials = () => {
     if (!accountSid || !authToken || !fromPhoneNumber) {
-        console.warn('[TWILIO] Missing credentials (TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, or TWILIO_PHONE_NUMBER).');
+        console.warn('[TWILIO] Missing SMS credentials (TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, or TWILIO_PHONE_NUMBER).');
         return false;
     }
+
+    return true;
+};
+
+const hasVerifyCredentials = () => {
+    if (!accountSid || !authToken || !verifyServiceSid) {
+        console.warn('[TWILIO] Missing Verify credentials (TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, or TWILIO_VERIFY_SERVICE_SID).');
+        return false;
+    }
+
     return true;
 };
 
@@ -57,26 +74,24 @@ const hasValidCredentials = () => {
  * @returns {object|null} - Twilio message object or null on failure
  */
 export const sendSMS = async (to, body) => {
-    try {
-        const formattedTo = formatPhoneNumber(to);
-        // Use fromPhoneNumber as-is from env (already in E.164 from Twilio console)
-        const formattedFrom = fromPhoneNumber;
+    const formattedTo = formatPhoneNumber(to);
 
-        if (!hasValidCredentials()) {
+    try {
+        if (!hasSmsCredentials()) {
             console.log(`[DEV] To: ${formattedTo}, Message: ${body}`);
             return null;
         }
 
         const message = await client.messages.create({
             body,
-            from: formattedFrom,
+            from: fromPhoneNumber,
             to: formattedTo,
         });
 
         console.log(`[TWILIO] SMS sent to ${formattedTo} | SID: ${message.sid}`);
         return message;
     } catch (error) {
-        console.error(`[TWILIO] Error sending SMS to ${to}:`, error.message);
+        console.error(`[TWILIO] Failed to send SMS to ${formattedTo}. Error: ${error.message}`);
         throw error;
     }
 };
@@ -95,16 +110,10 @@ export const sendSMS = async (to, body) => {
  * @returns {object|null} - Twilio verification object or null on failure
  */
 export const sendOTP = async (to, channel = 'sms') => {
+    const formattedTo = formatPhoneNumber(to);
+
     try {
-        const formattedTo = formatPhoneNumber(to);
-
-        if (!verifyServiceSid) {
-            console.warn('[TWILIO] TWILIO_VERIFY_SERVICE_SID is not set. Cannot send OTP via Verify.');
-            return null;
-        }
-
-        if (!accountSid || !authToken) {
-            console.warn('[TWILIO] Missing Twilio credentials. OTP not sent.');
+        if (!hasVerifyCredentials()) {
             console.log(`[DEV] OTP would be sent to: ${formattedTo}`);
             return null;
         }
@@ -119,7 +128,7 @@ export const sendOTP = async (to, channel = 'sms') => {
         console.log(`[TWILIO] OTP sent to ${formattedTo} via ${channel} | Status: ${verification.status}`);
         return verification;
     } catch (error) {
-        console.error(`[TWILIO] Error sending OTP to ${to}:`, error.message);
+        console.error(`[TWILIO] Error sending OTP to ${formattedTo}: ${error.message}`);
         throw error;
     }
 };
@@ -132,16 +141,10 @@ export const sendOTP = async (to, channel = 'sms') => {
  * @returns {{ success: boolean, status: string }} - Verification result
  */
 export const verifyOTP = async (to, code) => {
+    const formattedTo = formatPhoneNumber(to);
+
     try {
-        const formattedTo = formatPhoneNumber(to);
-
-        if (!verifyServiceSid) {
-            console.warn('[TWILIO] TWILIO_VERIFY_SERVICE_SID is not set. Cannot verify OTP.');
-            return { success: false, status: 'missing_service_sid' };
-        }
-
-        if (!accountSid || !authToken) {
-            console.warn('[TWILIO] Missing Twilio credentials. OTP not verified.');
+        if (!hasVerifyCredentials()) {
             return { success: false, status: 'missing_credentials' };
         }
 
@@ -155,12 +158,45 @@ export const verifyOTP = async (to, code) => {
         const approved = verificationCheck.status === 'approved';
         console.log(`[TWILIO] OTP verification for ${formattedTo}: ${verificationCheck.status}`);
 
-        return {.
+        return {
             success: approved,
-            status: verificationCheck.status, // 'approved' | 'pending' | 'canceled'
+            status: verificationCheck.status,
         };
     } catch (error) {
-        console.error(`[TWILIO] Error verifying OTP for ${to}:`, error.message);
+        console.error(`[TWILIO] Error verifying OTP for ${formattedTo}: ${error.message}`);
         throw error;
     }
+};
+
+export const sendOtpMessage = async (to, otp) => {
+    if (verifyServiceSid) {
+        return sendOTP(to);
+    }
+
+    return sendSMS(
+        to,
+        `Your FixBuddy verification code is ${otp}. It expires shortly. Do not share this code with anyone.`
+    );
+};
+
+export const sendCaptainAssignmentSms = async ({ to, captainName, requestTitle }) => {
+    return sendSMS(
+        to,
+        `Hello ${captainName}! A new FixBuddy request "${requestTitle}" has been assigned to you. Open your dashboard for details.`
+    );
+};
+
+export const sendUserRequestStatusSms = async ({ to, captainName, requestTitle, status, amount }) => {
+    const messages = {
+        ACCEPTED: `Great news! Captain ${captainName} accepted your FixBuddy request "${requestTitle}".`,
+        ONGOING: `Captain ${captainName} has started working on your FixBuddy request "${requestTitle}".`,
+        COMPLETED: `Your FixBuddy request "${requestTitle}" is complete. Total amount: $${amount ?? 0}.`,
+    };
+
+    const message = messages[status];
+    if (!message) {
+        return null;
+    }
+
+    return sendSMS(to, message);
 };
