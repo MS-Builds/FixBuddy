@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000/api/admin';
+const API_BASE_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL + '/admin' : 'https://fix-buddy.vercel.app/api/admin';
 
 const api = axios.create({
     baseURL: API_BASE_URL,
