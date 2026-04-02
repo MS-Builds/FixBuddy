@@ -1,37 +1,21 @@
-import { formatPhoneNumber, sendOtpMessage, verifyOTP } from './sms.js';
+import { normalizeEmail, sendOtpEmail as sendOtpEmailMessage } from './mailer.js';
 
-// Mock OTP generation (Only used for legacy Programmable SMS)
 export const generateOtp = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
-/**
- * Sends an OTP. If TWILIO_VERIFY_SERVICE_SID is present, uses Twilio Verify.
- * Otherwise falls back to Programmable SMS (requires a valid Twilio 'From' number).
- */
-export const sendOtpSms = async (phoneNumber, otp) => {
-    try {
-        const normalizedPhoneNumber = formatPhoneNumber(phoneNumber);
-        await sendOtpMessage(normalizedPhoneNumber, otp);
-        console.log(`[OTP] Verification initiated for ${normalizedPhoneNumber}`);
-        return true;
-    } catch (error) {
-        console.error(`Error logging OTP for ${phoneNumber}: ${error.message}`);
-        return false;
+export const sendOtpEmail = async (email, otp) => {
+    const normalizedEmail = normalizeEmail(email);
+
+    if (!normalizedEmail) {
+        throw new Error('A valid email address is required to send an OTP.');
     }
+
+    await sendOtpEmailMessage({ to: normalizedEmail, otp });
+    console.log(`[OTP] Verification initiated for ${normalizedEmail}`);
+    return true;
 };
 
-/**
- * Verifies an OTP. If TWILIO_VERIFY_SERVICE_SID is present, checks with Twilio.
- * Otherwise performs a manual comparison.
- */
-export const verifyOtpCode = async (phoneNumber, receivedOtp, storedOtp) => {
-    const normalizedPhoneNumber = formatPhoneNumber(phoneNumber);
-
-    if (process.env.TWILIO_VERIFY_SERVICE_SID) {
-        const result = await verifyOTP(normalizedPhoneNumber, receivedOtp);
-        return result.success;
-    }
-
+export const verifyOtpCode = async (receivedOtp, storedOtp) => {
     return receivedOtp === storedOtp;
 };

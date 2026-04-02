@@ -4,10 +4,11 @@ const errorHandler = (err, req, res, next) => {
     console.error(`[Error] ${err.message}`, err.stack);
 
     if (err.name === 'ZodError' || err instanceof ZodError) {
+        const issues = err.issues || err.errors || [];
         return res.status(400).json({
             success: false,
             message: "Validation Error",
-            errors: (err.errors || []).map(e => ({ path: e.path?.join('.'), message: e.message }))
+            errors: issues.map(e => ({ path: e.path?.join('.'), message: e.message }))
         });
     }
 

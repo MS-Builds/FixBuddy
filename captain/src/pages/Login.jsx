@@ -14,8 +14,8 @@ export default function Login() {
   const { isAuthenticated, login } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const [method, setMethod] = useState("phone"); // default to phone
-  const [identifier, setIdentifier] = useState("");
+  const [email, setEmail] = useState("");
+  const [deliveryTarget, setDeliveryTarget] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
@@ -36,17 +36,17 @@ export default function Login() {
 
   const handleSendOtp = async (e) => {
     if (e) e.preventDefault();
-    if (!identifier) {
-      toast.error("Please enter email or phone number.");
+    if (!email) {
+      toast.error("Please enter your email address.");
       return;
     }
     setLoading(true);
     try {
-      await api.post("/auth/captain/login", { phoneNumber: identifier });
-
+      const response = await api.post("/auth/captain/login", { email });
+      setDeliveryTarget(response.data?.data?.deliveryTarget || "");
       setOtpSent(true);
       setResendTimer(60);
-      toast.success("OTP sent successfully!");
+      toast.success("OTP sent to your email!");
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to send OTP. Please try again.");
     } finally {
@@ -58,9 +58,9 @@ export default function Login() {
     if (resendTimer > 0) return;
     setLoading(true);
     try {
-      await api.post("/auth/resend-otp", { phoneNumber: identifier });
+      await api.post("/auth/resend-otp", { email });
       setResendTimer(60);
-      toast.success("OTP resent successfully!");
+      toast.success("OTP resent to your email!");
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to resend OTP.");
     } finally {
@@ -76,10 +76,8 @@ export default function Login() {
     }
     setLoading(true);
     try {
-      const res = await api.post("/auth/captain/verify-otp", { phoneNumber: identifier, otp });
-      // The backend returns { success: true, message: '...', data: { captain, token } }
+      const res = await api.post("/auth/captain/verify-otp", { email, otp });
       login(res.data.data.token, res.data.data.captain);
-
       toast.success("Login successful!");
       navigate("/profile");
     } catch (err) {
@@ -112,7 +110,7 @@ export default function Login() {
               </div>
             </div>
             <div className="flex items-center gap-2 text-sm text-white/72">
-              Enter your phone number, verify the OTP, and continue to your captain dashboard.
+              Enter your email address, verify the OTP, and continue to your captain dashboard.
               <ArrowRight className="h-4 w-4" />
             </div>
           </div>
@@ -125,7 +123,7 @@ export default function Login() {
             </div>
             <div>
               <CardTitle className="text-3xl font-extrabold tracking-tight">Welcome back</CardTitle>
-              <CardDescription className="mt-2 text-base">Login to manage your requests, profile, and active work.</CardDescription>
+              <CardDescription className="mt-2 text-base">Login with your email address and receive a code in your inbox.</CardDescription>
             </div>
           </CardHeader>
           <CardContent>
@@ -133,15 +131,15 @@ export default function Login() {
             <form onSubmit={handleSendOtp} className="space-y-6">
               <div className="space-y-3">
                 <div className="space-y-2">
-                  <Label htmlFor="identifier" className="text-sm font-medium">
-                    Phone Number
+                  <Label htmlFor="email" className="text-sm font-medium">
+                    Email Address
                   </Label>
                   <Input
-                    id="identifier"
-                    type="tel"
-                    placeholder="+91(555) 000-0000"
-                    value={identifier}
-                    onChange={(e) => setIdentifier(e.target.value)}
+                    id="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                     className="h-12"
                   />
@@ -162,7 +160,7 @@ export default function Login() {
                 <div className="flex items-center justify-between">
                   <Label htmlFor="otp" className="text-sm font-medium">One-Time Password</Label>
                   <Button type="button" variant="link" size="sm" onClick={() => setOtpSent(false)} className="h-auto p-0 text-muted-foreground hover:text-primary">
-                    Change Phone Number
+                    Change Email
                   </Button>
                 </div>
                 <Input
@@ -176,7 +174,7 @@ export default function Login() {
                   className="h-12 text-center text-xl tracking-widest font-mono"
                 />
                 <div className="flex flex-col items-center gap-2 mt-2">
-                  <p className="text-xs text-muted-foreground text-center">OTP sent to {identifier}</p>
+                  <p className="text-xs text-muted-foreground text-center">OTP sent to {deliveryTarget || "your email address"}</p>
                   <Button
                     type="button"
                     variant="ghost"

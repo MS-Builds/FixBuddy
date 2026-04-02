@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { deleteFromCloudinary } from '../utils/cloudinary.js';
-import { sendUserRequestStatusSms } from '../utils/sms.js';
+import { sendUserRequestStatusEmail } from '../utils/mailer.js';
 
 const prisma = new PrismaClient();
 
@@ -131,20 +131,22 @@ export const updateRequestStatus = async (req, res, next) => {
             });
         }
 
-        // --- SMS Notifications ---
         try {
-            const user = await prisma.user.findUnique({ where: { id: request.userId } });
-            if (user && user.phoneNumber) {
-                await sendUserRequestStatusSms({
-                    to: user.phoneNumber,
-                    captainName: req.user.name,
+            const user = await prisma.user.findUnique({
+                where: { id: request.userId },
+                select: { email: true }
+            });
+            if (user?.email) {
+                await sendUserRequestStatusEmail({
+                    to: user.email,
+                    captainName: req.dbCaptain?.name || 'Your captain',
                     requestTitle: request.title,
                     status,
                     amount: updatedRequest.amount
                 });
             }
-        } catch (smsError) {
-            console.error('[SMS] Notification failed:', smsError.message);
+        } catch (emailError) {
+            console.error('[EMAIL] Notification failed:', emailError.message);
         }
 
         // After the task is complete remove the images sent by the user for work

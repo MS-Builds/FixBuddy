@@ -1,3 +1,0 @@
-﻿CONTAINER ID   IMAGE                COMMAND                  CREATED        STATUS       PORTS                                         NAMES
-9b1164c2b57e   postgres:15-alpine   "docker-entrypoint.s…"   22 hours ago   Up 2 hours   5432/tcp                                      medilite-db-1
-a9dec7590dcc   postgres             "docker-entrypoint.s…"   2 days ago     Up 2 hours   0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp   postgres-db

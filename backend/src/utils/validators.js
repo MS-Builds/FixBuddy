@@ -21,7 +21,7 @@ export const schemas = {
         body: z.object({
             name: z.string().min(2, "Name must be at least 2 characters"),
             phoneNumber: z.string().regex(phoneRegex, "Invalid phone number"),
-            email: z.string().email("Invalid email").optional(),
+            email: z.string().email("Invalid email"),
             location: z.string().optional(),
         })
     }),
@@ -37,13 +37,13 @@ export const schemas = {
     }),
     loginRequest: z.object({
         body: z.object({
-            phoneNumber: z.string().regex(phoneRegex, "Invalid phone number"),
+            email: z.string().email("Invalid email address"),
         })
     }),
     verifyOtp: z.object({
         body: z.object({
-            phoneNumber: z.string().regex(phoneRegex, "Invalid phone number"),
-            otp: z.string().length(6, "OTP must be 6 digits")
+            email: z.string().email("Invalid email address"),
+            otp: z.coerce.string().length(6, "OTP must be 6 digits")
         })
     }),
     createServiceRequest: z.object({

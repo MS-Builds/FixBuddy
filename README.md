@@ -8,8 +8,8 @@ Everything you need to run, manage, and scale a service-based marketplace.
 
 ### Tech Stack
 -   **Frontend**: React.js (Vite), TailwindCSS, Shadcn UI
--   **Backend**: Node.js, Express, Prisma (PostgreSQL), Socket.io
--   **Services**: Twilio (SMS), Cloudinary (Images), Neon (Database)
+-   **Backend**: Node.js, Express, Prisma (MongoDB Atlas), Socket.io
+-   **Services**: Nodemailer/SMTP (Email), Cloudinary (Images), MongoDB Atlas (Database)
 
 ## 📁 Repository Structure
 
@@ -26,9 +26,9 @@ FixBuddy/
 
 ### Prerequisites
 -   Node.js (v18+)
--   PostgreSQL (or Neon.tech account)
+-   MongoDB Atlas account
 -   Cloudinary Account
--   Twilio Account
+-   SMTP email account
 
 ### Installation
 
@@ -52,10 +52,10 @@ FixBuddy/
     # ... repeat for captain and admin
     ```
 
-4.  **Database Migration**:
+4.  **Database Setup**:
     ```bash
     cd backend
-    npx prisma migrate dev
+    npx prisma db push
     npx prisma generate
     ```
 
@@ -63,7 +63,7 @@ FixBuddy/
     Each component can be started with `npm run dev`.
 
 ## 📜 Key Features
--   **OTP Authentication**: Secure login/signup via Twilio SMS.
+-   **OTP Authentication**: Secure login/signup via email verification.
 -   **Real-time Chat**: Direct communication between Users and Captains.
 -   **Job Lifecycle**: Request -> Acceptance -> Ongoing -> Completion.
 -   **Professional Profiles**: Verified skills, ratings, and portfolios.

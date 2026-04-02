@@ -3,15 +3,15 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id          String   @id @default(uuid())
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   phoneNumber String   @unique
-  email       String?  @unique
+  email       String?
   location    String?
   profileImage String?
   createdAt   DateTime @default(now())
@@ -21,10 +21,10 @@ model User {
 }
 
 model Captain {
-  id           String   @id @default(uuid())
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
   name         String
   phoneNumber  String   @unique
-  email        String?  @unique
+  email        String?
   password     String?
   skills       String[]
   hourlyRate   Float?
@@ -35,7 +35,7 @@ model Captain {
   isActive     Boolean  @default(true)
   latitude     Float?
   longitude    Float?
-  totalEarnings Float     @default(0)
+  totalEarnings Float    @default(0)
   createdAt    DateTime @default(now())
 
   serviceRequests ServiceRequest[]
@@ -43,9 +43,9 @@ model Captain {
 }
 
 model ServiceRequest {
-  id          String   @id @default(uuid())
-  userId      String
-  captainId   String?
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String        @db.ObjectId
+  captainId   String?       @db.ObjectId
   title       String   @default("Service Request")
   serviceType String?
   description String
@@ -57,9 +57,13 @@ model ServiceRequest {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id])
   captain     Captain? @relation(fields: [captainId], references: [id])
   messages    Message[]
+
+  @@index([userId])
+  @@index([captainId])
+  @@index([status])
 }
 
 enum ServiceStatus {
@@ -71,30 +75,35 @@ enum ServiceStatus {
 }
 
 model Message {
-  id               String   @id @default(uuid())
+  id               String         @id @default(auto()) @map("_id") @db.ObjectId
   senderId         String
   receiverId       String
   text             String
-  serviceRequestId String
+  serviceRequestId String         @db.ObjectId
   createdAt        DateTime @default(now())
 
-  serviceRequest   ServiceRequest  @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
+  serviceRequest   ServiceRequest  @relation(fields: [serviceRequestId], references: [id])
+
+  @@index([serviceRequestId])
 }
 
 model Review {
-  id          String   @id @default(uuid())
-  userId      String
-  captainId   String
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  captainId   String   @db.ObjectId
   rating      Int
   comment     String?
   createdAt   DateTime @default(now())
 
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  captain     Captain  @relation(fields: [captainId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id])
+  captain     Captain  @relation(fields: [captainId], references: [id])
+
+  @@index([userId])
+  @@index([captainId])
 }
 
 model Admin {
-  id       String @id @default(uuid())
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
   email    String @unique
   password String
 }

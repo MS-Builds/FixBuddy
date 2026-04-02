@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { sendCaptainAssignmentSms } from '../utils/sms.js';
+import { sendCaptainAssignmentEmail } from '../utils/mailer.js';
 
 const prisma = new PrismaClient();
 
@@ -143,19 +143,21 @@ export const createServiceRequest = async (req, res, next) => {
 
         res.status(201).json({ success: true, data: request });
 
-        // --- SMS Notification to Captain ---
         if (captainId && captainId !== "") {
             try {
-                const captain = await prisma.captain.findUnique({ where: { id: captainId } });
-                if (captain && captain.phoneNumber) {
-                    await sendCaptainAssignmentSms({
-                        to: captain.phoneNumber,
+                const captain = await prisma.captain.findUnique({
+                    where: { id: captainId },
+                    select: { email: true, name: true }
+                });
+                if (captain?.email) {
+                    await sendCaptainAssignmentEmail({
+                        to: captain.email,
                         captainName: captain.name,
                         requestTitle: title || serviceType || 'Service Request'
                     });
                 }
-            } catch (smsError) {
-                console.error('[SMS] Captain notification failed:', smsError.message);
+            } catch (emailError) {
+                console.error('[EMAIL] Captain notification failed:', emailError.message);
             }
         }
     } catch (error) {

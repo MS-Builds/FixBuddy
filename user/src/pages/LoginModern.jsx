@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, MessageSquareText, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ArrowRight, Mail, ShieldCheck } from "lucide-react";
 import { AuthContext } from "../context/AuthContext";
 import { BrandWordmark } from "../components/BrandWordmark";
 import { Button } from "../components/ui/button";
@@ -13,7 +13,8 @@ import { toast } from "sonner";
 export default function LoginModern() {
     const { isAuthenticated, login } = useContext(AuthContext);
     const navigate = useNavigate();
-    const [phoneNumber, setPhoneNumber] = useState("");
+    const [email, setEmail] = useState("");
+    const [deliveryTarget, setDeliveryTarget] = useState("");
     const [otpSent, setOtpSent] = useState(false);
     const [otp, setOtp] = useState("");
     const [loading, setLoading] = useState(false);
@@ -34,17 +35,18 @@ export default function LoginModern() {
 
     const handleSendOtp = async (event) => {
         event?.preventDefault();
-        if (!phoneNumber) {
-            toast.error("Please enter your phone number.");
+        if (!email) {
+            toast.error("Please enter your email address.");
             return;
         }
 
         setLoading(true);
         try {
-            await api.post("/auth/user/login", { phoneNumber });
+            const response = await api.post("/auth/user/login", { email });
+            setDeliveryTarget(response.data?.data?.deliveryTarget || "");
             setOtpSent(true);
             setResendTimer(60);
-            toast.success("Verification code sent.");
+            toast.success("Verification code sent to your email.");
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to send OTP.");
         } finally {
@@ -61,7 +63,7 @@ export default function LoginModern() {
 
         setLoading(true);
         try {
-            const response = await api.post("/auth/user/verify-otp", { phoneNumber, otp });
+            const response = await api.post("/auth/user/verify-otp", { email, otp });
             login(response.data.data.token, response.data.data.user);
             toast.success("Welcome back.");
             navigate("/dashboard");
@@ -79,9 +81,9 @@ export default function LoginModern() {
 
         setLoading(true);
         try {
-            await api.post("/auth/resend-otp", { phoneNumber });
+            await api.post("/auth/resend-otp", { email });
             setResendTimer(60);
-            toast.success("OTP resent successfully.");
+            toast.success("OTP resent to your email.");
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to resend OTP.");
         } finally {
@@ -102,11 +104,11 @@ export default function LoginModern() {
                                 Sign in without the usual friction.
                             </h1>
                             <p className="mt-6 max-w-md text-base leading-8 text-primary-foreground/78">
-                                OTP login keeps the flow quick while request updates, matching, and chat stay in one place after entry.
+                                Enter your email address and we'll send a one-time code straight to your inbox.
                             </p>
                             <div className="mt-10 space-y-4">
-                                <Feature icon={ShieldCheck} text="Phone-based verification for faster entry" />
-                                <Feature icon={MessageSquareText} text="Stay close to booking updates and chat" />
+                                <Feature icon={ShieldCheck} text="Passwordless, email-based verification" />
+                                <Feature icon={Mail} text="Code delivered directly to your inbox" />
                             </div>
                         </div>
                     </div>
@@ -128,28 +130,28 @@ export default function LoginModern() {
                             <CardContent className="space-y-8 px-0">
                                 <div>
                                     <p className="text-sm font-semibold uppercase tracking-[0.24em] text-muted-foreground">
-                                        {otpSent ? "Verify your number" : "Welcome back"}
+                                        {otpSent ? "Verify your email" : "Welcome back"}
                                     </p>
                                     <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.06em]">
                                         {otpSent ? "Enter the code we sent." : "Sign in to FixBuddy."}
                                     </h2>
                                     <p className="mt-3 text-base leading-7 text-muted-foreground">
                                         {otpSent
-                                            ? `Use the six-digit code sent to ${phoneNumber}.`
-                                            : "Continue with your phone number to access bookings, updates, and chat."}
+                                            ? `Use the six-digit code sent to ${deliveryTarget || "your email address"}.`
+                                            : "Enter your email address and we'll send a login code to your inbox."}
                                     </p>
                                 </div>
 
                                 {!otpSent ? (
                                     <form onSubmit={handleSendOtp} className="space-y-6">
                                         <div className="space-y-2">
-                                            <Label htmlFor="phone" className="text-xs font-bold uppercase tracking-[0.24em] text-muted-foreground">Phone number</Label>
+                                            <Label htmlFor="email" className="text-xs font-bold uppercase tracking-[0.24em] text-muted-foreground">Email address</Label>
                                             <Input
-                                                id="phone"
-                                                type="tel"
-                                                placeholder="+91 98765 43210"
-                                                value={phoneNumber}
-                                                onChange={(event) => setPhoneNumber(event.target.value)}
+                                                id="email"
+                                                type="email"
+                                                placeholder="you@example.com"
+                                                value={email}
+                                                onChange={(event) => setEmail(event.target.value)}
                                                 className="h-14 rounded-2xl border-border/80 px-4 text-base"
                                                 required
                                             />
@@ -165,7 +167,7 @@ export default function LoginModern() {
                                             <div className="flex items-center justify-between">
                                                 <Label htmlFor="otp" className="text-xs font-bold uppercase tracking-[0.24em] text-muted-foreground">Verification code</Label>
                                                 <Button type="button" variant="link" className="h-auto p-0 font-semibold" onClick={() => setOtpSent(false)}>
-                                                    Change number
+                                                    Change email
                                                 </Button>
                                             </div>
                                             <Input

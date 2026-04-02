@@ -15,6 +15,7 @@ export default function SignUpModern() {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({ name: "", phoneNumber: "", email: "", location: "" });
+    const [deliveryTarget, setDeliveryTarget] = useState("");
     const [otp, setOtp] = useState("");
     const [loading, setLoading] = useState(false);
     const [resendTimer, setResendTimer] = useState(0);
@@ -38,17 +39,18 @@ export default function SignUpModern() {
 
     const handleSignUp = async (event) => {
         event.preventDefault();
-        if (!formData.name || !formData.phoneNumber) {
+        if (!formData.name || !formData.phoneNumber || !formData.email) {
             toast.error("Please fill in the required fields.");
             return;
         }
 
         setLoading(true);
         try {
-            await api.post("/auth/user/signup", formData);
+            const response = await api.post("/auth/user/signup", formData);
+            setDeliveryTarget(response.data?.data?.deliveryTarget || formData.email);
             setStep(2);
             setResendTimer(60);
-            toast.success("Verification code sent.");
+            toast.success("Verification code sent to your email.");
         } catch (error) {
             toast.error(error.response?.data?.message || "Signup failed.");
         } finally {
@@ -65,7 +67,7 @@ export default function SignUpModern() {
 
         setLoading(true);
         try {
-            const response = await api.post("/auth/user/verify-otp", { phoneNumber: formData.phoneNumber, otp });
+            const response = await api.post("/auth/user/verify-otp", { email: formData.email, otp });
             login(response.data.data.token, response.data.data.user);
             toast.success("Account created successfully.");
             navigate("/dashboard");
@@ -83,9 +85,9 @@ export default function SignUpModern() {
 
         setLoading(true);
         try {
-            await api.post("/auth/resend-otp", { phoneNumber: formData.phoneNumber });
+            await api.post("/auth/resend-otp", { email: formData.email });
             setResendTimer(60);
-            toast.success("OTP resent successfully.");
+            toast.success("OTP resent to your email.");
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to resend OTP.");
         } finally {
@@ -96,20 +98,20 @@ export default function SignUpModern() {
     return (
         <div className="min-h-screen bg-background px-4 py-6 sm:px-6 lg:px-8">
             <div className="mx-auto flex min-h-[calc(100vh-3rem)] max-w-7xl flex-col overflow-hidden rounded-[36px] border border-border/70 bg-card shadow-[0_30px_120px_rgba(15,23,42,0.1)] lg:grid lg:grid-cols-[0.95fr_1.05fr]">
-                <div className="relative hidden overflow-hidden bg-secondary px-8 py-10 lg:flex lg:flex-col">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(34,197,94,0.14),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(15,23,42,0.08),_transparent_35%)]" />
+                <div className="relative hidden overflow-hidden bg-primary px-8 py-10 text-primary-foreground lg:flex lg:flex-col">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.18),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(34,197,94,0.25),_transparent_30%)]" />
                     <div className="relative flex h-full flex-col justify-between">
-                        <BrandWordmark subtitle="Create account" compact />
+                        <BrandWordmark subtitle="Create account" compact light />
                         <div>
-                            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-muted-foreground">Better onboarding</p>
-                            <h1 className="mt-4 max-w-md text-5xl font-extrabold tracking-[-0.08em] text-foreground">
+                            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary-foreground/65">Better onboarding</p>
+                            <h1 className="mt-4 max-w-md text-5xl font-extrabold tracking-[-0.08em]">
                                 Start with a cleaner first impression.
                             </h1>
-                            <p className="mt-6 max-w-md text-base leading-8 text-muted-foreground">
+                            <p className="mt-6 max-w-md text-base leading-8 text-primary-foreground/78">
                                 We made the entry flow clearer so new users know what happens next at every step.
                             </p>
                             <div className="mt-10 space-y-4">
-                                <Feature icon={ShieldCheck} text="Simple phone verification" />
+                                <Feature icon={ShieldCheck} text="Simple email verification" />
                                 <Feature icon={CheckCircle2} text="Faster handoff into requests and booking" />
                             </div>
                         </div>
@@ -132,7 +134,7 @@ export default function SignUpModern() {
                             <CardContent className="space-y-8 px-0">
                                 <div>
                                     <p className="text-sm font-semibold uppercase tracking-[0.24em] text-muted-foreground">
-                                        {step === 1 ? "Create your account" : "Verify your phone"}
+                                        {step === 1 ? "Create your account" : "Verify your email"}
                                     </p>
                                     <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.06em]">
                                         {step === 1 ? "Join FixBuddy." : "Confirm the code we sent."}
@@ -140,7 +142,7 @@ export default function SignUpModern() {
                                     <p className="mt-3 text-base leading-7 text-muted-foreground">
                                         {step === 1
                                             ? "Set up your account to book professionals, track service requests, and chat in one place."
-                                            : `Enter the six-digit code sent to ${formData.phoneNumber}.`}
+                                            : `Enter the six-digit code sent to ${deliveryTarget || formData.email}.`}
                                     </p>
                                 </div>
 
@@ -153,7 +155,7 @@ export default function SignUpModern() {
                                             <Input id="phoneNumber" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} placeholder="+91 98765 43210" className="h-14 rounded-2xl border-border/80 px-4 text-base" required />
                                         </Field>
                                         <Field label="Email" id="email">
-                                            <Input id="email" name="email" type="email" value={formData.email} onChange={handleChange} placeholder="you@example.com" className="h-14 rounded-2xl border-border/80 px-4 text-base" />
+                                            <Input id="email" name="email" type="email" value={formData.email} onChange={handleChange} placeholder="you@example.com" className="h-14 rounded-2xl border-border/80 px-4 text-base" required />
                                         </Field>
                                         <Field label="Location" id="location">
                                             <Input id="location" name="location" value={formData.location} onChange={handleChange} placeholder="City, State" className="h-14 rounded-2xl border-border/80 px-4 text-base" />
@@ -222,9 +224,9 @@ function Field({ label, id, children }) {
 
 function Feature({ icon: Icon, text }) {
     return (
-        <div className="flex items-center gap-3 text-sm text-foreground/80">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-background/90">
-                <Icon className="h-4 w-4 text-accent-foreground" />
+        <div className="flex items-center gap-3 text-sm text-primary-foreground/82">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-foreground/10">
+                <Icon className="h-4 w-4" />
             </div>
             <span>{text}</span>
         </div>
