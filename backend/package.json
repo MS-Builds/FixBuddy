@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
+    "build": "prisma generate && prisma db push",
+    "postinstall": "prisma generate",
     "data:migrate": "node scripts/migrate-postgres-to-mongo.js",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
