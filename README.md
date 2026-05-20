@@ -1,15 +1,15 @@
 # FixBuddy - Professional Service Marketplace
 
-FixBuddy (formerly FixBuddy) is a modern platform that connects users with skilled professionals (Captains) for various service needs. Inspired by apps like Uber but for handyman services, it features real-time tracking, chat, and an integrated payment flow.
+FixBuddy is a modern platform that connects users with skilled professionals (Captains) for various service needs. Inspired by apps like Uber but for handyman services, it features real-time tracking, chat, location mapping, and an integrated payment flow.
 
 ## 🚀 Project Overview
 
 Everything you need to run, manage, and scale a service-based marketplace.
 
 ### Tech Stack
--   **Frontend**: React.js (Vite), TailwindCSS, Shadcn UI
--   **Backend**: Node.js, Express, Prisma (MongoDB Atlas), Socket.io
--   **Services**: Nodemailer/SMTP (Email), Cloudinary (Images), MongoDB Atlas (Database)
+-   **Frontend**: React.js (Vite), TailwindCSS, Radix UI, Shadcn UI, Leaflet Maps
+-   **Backend**: Node.js, Express, Prisma, MongoDB Atlas, Socket.io, Google Generative AI
+-   **Services**: Nodemailer (Email), Cloudinary (Image Storage), JWT Authentication, Bcryptjs (Password Hashing)
 
 ## 📁 Repository Structure
 
@@ -32,13 +32,13 @@ This codebase is rebased with the latest GitHub `main` history before delivery, 
 -   Node.js (v18+)
 -   MongoDB Atlas account
 -   Cloudinary Account
--   SMTP email account
+-   SMTP email service (for email notifications)
 
 ### Installation
 
 1.  **Clone the Repo**:
     ```bash
-    git clone <repo-url>
+    git clone https://github.com/MS-Builds/FixBuddy.git
     cd FixBuddy
     ```
 
